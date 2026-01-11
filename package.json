@@ -1,0 +1,66 @@
+{
+  "name": "@toniel/laravel-tanstack-datatable",
+  "version": "0.1.0",
+  "description": "Vue 3 DataTable components for Laravel pagination with TanStack Query and shadcn-vue",
+  "type": "module",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
+    },
+    "./style.css": "./dist/style.css"
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "scripts": {
+    "dev": "vite build --watch",
+    "build": "vite build && vue-tsc --declaration --emitDeclarationOnly --outDir dist",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "vue",
+    "vue3",
+    "laravel",
+    "pagination",
+    "datatable",
+    "tanstack-query",
+    "shadcn-vue",
+    "table",
+    "components"
+  ],
+  "author": "Your Name",
+  "license": "MIT",
+  "peerDependencies": {
+    "vue": "^3.0.0",
+    "@tanstack/vue-query": "^5.0.0",
+    "@tanstack/vue-table": "^8.0.0",
+    "@toniel/laravel-tanstack-pagination": "^0.1.0",
+    "radix-vue": "^1.0.0",
+    "class-variance-authority": "^0.7.0",
+    "clsx": "^2.0.0",
+    "tailwind-merge": "^2.0.0",
+    "lucide-vue-next": "^0.460.0"
+  },
+  "devDependencies": {
+    "@tanstack/vue-query": "^5.83.1",
+    "@tanstack/vue-table": "^8.20.5",
+    "@types/node": "^22.0.0",
+    "@vitejs/plugin-vue": "^5.0.0",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "lucide-vue-next": "^0.460.0",
+    "radix-vue": "^1.9.9",
+    "tailwind-merge": "^2.5.5",
+    "typescript": "^5.6.0",
+    "vite": "^6.0.0",
+    "vite-plugin-dts": "^4.0.0",
+    "vue": "^3.5.0",
+    "vue-tsc": "^2.0.0"
+  }
+}
