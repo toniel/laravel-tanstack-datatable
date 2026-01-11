@@ -1,13 +1,24 @@
 # Laravel TanStack DataTable
 
+[![npm version](https://img.shields.io/npm/v/@toniel/laravel-tanstack-datatable)](https://www.npmjs.com/package/@toniel/laravel-tanstack-datatable)
+[![npm downloads](https://img.shields.io/npm/dm/@toniel/laravel-tanstack-datatable)](https://www.npmjs.com/package/@toniel/laravel-tanstack-datatable)
+[![GitHub](https://img.shields.io/github/license/toniel/laravel-tanstack-datatable)](https://github.com/toniel/laravel-tanstack-datatable/blob/main/LICENSE)
+[![GitHub stars](https://img.shields.io/github/stars/toniel/laravel-tanstack-datatable)](https://github.com/toniel/laravel-tanstack-datatable)
+
 Vue 3 DataTable components for Laravel pagination with TanStack Query and TanStack Table.
 
-> 🔗 **Companion Package**: This package works together with [`@toniel/laravel-tanstack-pagination`](https://www.npmjs.com/package/@toniel/laravel-tanstack-pagination) - the core composables library.
+> 🔗 **Companion Package**: This package works together with [`@toniel/laravel-tanstack-pagination`](https://github.com/toniel/laravel-tanstack-pagination) - the core composables library.
 
 ## 📦 Installation
 
 ```bash
 npm install @toniel/laravel-tanstack-datatable @toniel/laravel-tanstack-pagination
+# or
+yarn add @toniel/laravel-tanstack-datatable @toniel/laravel-tanstack-pagination
+# or
+pnpm add @toniel/laravel-tanstack-datatable @toniel/laravel-tanstack-pagination
+# or
+bun add @toniel/laravel-tanstack-datatable @toniel/laravel-tanstack-pagination
 ```
 
 ### Peer Dependencies
@@ -293,16 +304,83 @@ You can override styles using Tailwind classes or custom CSS:
 }
 ```
 
+## 🎨 Theming
+
+The components use Tailwind CSS and support dark mode out of the box. You can customize colors by:
+
+1. **Using Tailwind Config:**
+```js
+// tailwind.config.js
+module.exports = {
+  theme: {
+    extend: {
+      colors: {
+        // Customize colors here
+      }
+    }
+  }
+}
+```
+
+2. **CSS Variables:**
+```css
+:root {
+  --color-primary: ...;
+  --color-border: ...;
+}
+```
+
 ## 🔗 Related Packages
 
-- [`@toniel/laravel-tanstack-pagination`](https://www.npmjs.com/package/@toniel/laravel-tanstack-pagination) - Core composables (required)
+- [`@toniel/laravel-tanstack-pagination`](https://github.com/toniel/laravel-tanstack-pagination) - Core composables (required)
 - [`@tanstack/vue-query`](https://tanstack.com/query/latest/docs/vue/overview) - Data fetching & caching
 - [`@tanstack/vue-table`](https://tanstack.com/table/latest/docs/framework/vue/vue-table) - Table state management
 
+## 🌟 Show Your Support
+
+If this package helped you, please consider:
+- ⭐ Starring the [GitHub repository](https://github.com/toniel/laravel-tanstack-datatable)
+- 🐛 [Reporting bugs](https://github.com/toniel/laravel-tanstack-datatable/issues)
+- 💡 [Suggesting new features](https://github.com/toniel/laravel-tanstack-datatable/issues)
+- 🔧 [Contributing code](https://github.com/toniel/laravel-tanstack-datatable/pulls)
+
 ## 📄 License
 
-MIT
+[MIT](https://github.com/toniel/laravel-tanstack-datatable/blob/main/LICENSE) © [Toniel](https://github.com/toniel)
 
 ## 🤝 Contributing
 
-Contributions are welcome! Please feel free to submit a Pull Request.
+Contributions, issues and feature requests are welcome!
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add some amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for more details.
+
+## 🐛 Known Issues
+
+Check the [GitHub Issues](https://github.com/toniel/laravel-tanstack-datatable/issues) page for known issues and feature requests.
+
+## 📮 Contact
+
+- GitHub: [@toniel](https://github.com/toniel)
+- NPM: [@toniel](https://www.npmjs.com/~toniel)
+
+## 🙏 Acknowledgments
+
+Built with these amazing libraries:
+- [Vue 3](https://vuejs.org/)
+- [TanStack Query](https://tanstack.com/query/latest)
+- [TanStack Table](https://tanstack.com/table/latest)
+- [Tailwind CSS](https://tailwindcss.com/)
+- [Lucide Icons](https://lucide.dev/)
+
+---
+
+<div align="center">
+  Made with ❤️ by <a href="https://github.com/toniel">Toniel</a>
+</div>
+

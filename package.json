@@ -30,12 +30,23 @@
     "pagination",
     "datatable",
     "tanstack-query",
-    "shadcn-vue",
+    "tanstack-table",
     "table",
-    "components"
+    "components",
+    "typescript",
+    "tailwindcss",
+    "ui-components"
   ],
-  "author": "Your Name",
+  "author": "Toniel <toniel@example.com>",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/toniel/laravel-tanstack-datatable.git"
+  },
+  "homepage": "https://github.com/toniel/laravel-tanstack-datatable#readme",
+  "bugs": {
+    "url": "https://github.com/toniel/laravel-tanstack-datatable/issues"
+  },
   "peerDependencies": {
     "vue": "^3.0.0",
     "@tanstack/vue-query": "^5.0.0",
