@@ -7,7 +7,7 @@ import {
   type ColumnDef,
   type RowSelectionState,
 } from '@tanstack/vue-table'
-import { ChevronDown, ChevronUp, Search } from 'lucide-vue-next'
+import { ChevronDown, ChevronUp } from 'lucide-vue-next'
 import { computed } from 'vue'
 import DataTablePagination from './DataTablePagination.vue'
 
@@ -156,12 +156,12 @@ defineExpose({
           v-if="showSearch"
           class="relative w-full max-w-sm"
         >
-          <div class="pointer-events-none absolute inset-y-0 start-0 flex items-center ps-3">
+          <!-- <div class="pointer-events-none absolute inset-y-0 start-0 flex items-center ps-3">
             <Search class="size-5 text-muted-foreground" />
-          </div>
+          </div> -->
           <input
             :value="search"
-            type="text"
+            type="search"
             placeholder="Search..."
             class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 ps-14 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
             @input="emit('searchChange', ($event.target as HTMLInputElement).value)"
