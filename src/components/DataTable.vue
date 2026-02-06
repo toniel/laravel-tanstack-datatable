@@ -29,7 +29,6 @@ interface Props {
   getRowId?: (row: any) => string
 
   // UI Optiondels
-s
   showSearch?: boolean
   showCaption?: boolean
   showPerPageSelector?: boolean
