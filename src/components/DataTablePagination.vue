@@ -141,9 +141,9 @@ const goToNextPage = () => {
             <button
               v-if="page !== '...'"
               :class="[
-                'inline-flex items-center justify-center h-10 w-10 text-sm font-medium transition-colors rounded-md',
+                'inline-flex items-center justify-center h-10 min-w-10 px-3 text-sm font-medium transition-colors rounded-md',
                 page === pagination.meta.current_page
-                  ? 'bg-blue-500 text-white hover:bg-blue-600'
+                  ? 'bg-primary text-primary-foreground hover:bg-primary/90'
                   : 'hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-200'
               ]"
               @click="goToPage(page as number)"
@@ -152,7 +152,7 @@ const goToNextPage = () => {
             </button>
             <span
               v-else
-              class="inline-flex items-center justify-center h-10 w-10 text-gray-500"
+              class="inline-flex items-center justify-center h-10 min-w-10 px-3 text-gray-500"
             >
               ...
             </span>

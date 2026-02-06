@@ -7,6 +7,33 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.1] - 2025-01-11
+
+### Changed
+- Made `DataTablePagination` component themeable using primary colors.
+- Updated README with NPM and GitHub badges
+- Added multiple package manager installation options (npm, yarn, pnpm, bun)
+- Enhanced documentation with better structure and formatting
+- Updated package.json metadata (repository URLs, homepage, bugs)
+- Updated keywords in package.json
+
+### Added
+- LICENSE file (MIT License)
+- Comprehensive CHANGELOG.md
+- Community section in README (contributing, support, contact)
+- "Show Your Support" section
+- Theming section for customization guide
+- Acknowledgments section
+- Known issues section
+
+### Documentation
+- Improved installation instructions
+- Added peer dependencies section clearly listed
+- Added contact information
+- Added related packages section
+- Better component props documentation
+- Added theming and customization guide
+
 ## [0.1.0] - 2025-01-11
 
 ### Added
@@ -52,5 +79,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Slot documentation
 - Dark mode setup guide
 
-[Unreleased]: https://github.com/toniel/laravel-tanstack-datatable/compare/v0.1.0...HEAD
+[Unreleased]: https://github.com/toniel/laravel-tanstack-datatable/compare/v0.1.1...HEAD
+[0.1.1]: https://github.com/toniel/laravel-tanstack-datatable/compare/v0.1.0...v0.1.1
 [0.1.0]: https://github.com/toniel/laravel-tanstack-datatable/releases/tag/v0.1.0
