@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.2] - 2026-02-07
+
+### Fixed
+- Fixed an issue in the `DataTable` component where the search input icon and placeholder text would overlap.
+
 ## [0.1.1] - 2025-01-11
 
 ### Changed
@@ -79,6 +84,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Slot documentation
 - Dark mode setup guide
 
-[Unreleased]: https://github.com/toniel/laravel-tanstack-datatable/compare/v0.1.1...HEAD
+[Unreleased]: https://github.com/toniel/laravel-tanstack-datatable/compare/v0.1.2...HEAD
+[0.1.2]: https://github.com/toniel/laravel-tanstack-datatable/compare/v0.1.1...v0.1.2
 [0.1.1]: https://github.com/toniel/laravel-tanstack-datatable/compare/v0.1.0...v0.1.1
 [0.1.0]: https://github.com/toniel/laravel-tanstack-datatable/releases/tag/v0.1.0

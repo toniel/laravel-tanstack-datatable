@@ -154,18 +154,18 @@ defineExpose({
         <!-- Search Input -->
         <div
           v-if="showSearch"
-          class="relative items-center w-full max-w-sm"
+          class="relative w-full max-w-sm"
         >
+          <div class="pointer-events-none absolute inset-y-0 start-0 flex items-center ps-3">
+            <Search class="size-5 text-muted-foreground" />
+          </div>
           <input
             :value="search"
             type="text"
             placeholder="Search..."
-            class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 pl-10 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+            class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 ps-10 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
             @input="emit('searchChange', ($event.target as HTMLInputElement).value)"
           />
-          <span class="absolute inset-y-0 flex items-center justify-center px-2 start-0">
-            <Search class="size-6 text-gray-400" />
-          </span>
         </div>
 
         <!-- Custom Filter Slot -->
