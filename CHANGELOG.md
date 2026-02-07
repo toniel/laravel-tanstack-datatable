@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.3] - 2026-02-07
+
+### Changed
+- Improved dark mode support by using `bg-background` and `text-foreground` classes.
+- Improved sorting indicators to show a default icon when no sort is active.
+
+### Added
+- Added `useDarkMode` composable to toggle dark mode.
+- Added `tailwind.config.js` with `darkMode: 'class'` option.
+
 ## [0.1.2] - 2026-02-07
 
 ### Fixed
@@ -84,7 +94,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Slot documentation
 - Dark mode setup guide
 
-[Unreleased]: https://github.com/toniel/laravel-tanstack-datatable/compare/v0.1.2...HEAD
+[Unreleased]: https://github.com/toniel/laravel-tanstack-datatable/compare/v0.1.3...HEAD
+[0.1.3]: https://github.com/toniel/laravel-tanstack-datatable/compare/v0.1.2...v0.1.3
 [0.1.2]: https://github.com/toniel/laravel-tanstack-datatable/compare/v0.1.1...v0.1.2
 [0.1.1]: https://github.com/toniel/laravel-tanstack-datatable/compare/v0.1.0...v0.1.1
 [0.1.0]: https://github.com/toniel/laravel-tanstack-datatable/releases/tag/v0.1.0
