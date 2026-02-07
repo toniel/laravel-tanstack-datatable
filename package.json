@@ -1,6 +1,6 @@
 {
   "name": "@toniel/laravel-tanstack-datatable",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "Vue 3 DataTable components for Laravel pagination with TanStack Query and shadcn-vue",
   "type": "module",
   "main": "./dist/index.js",
