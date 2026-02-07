@@ -95,7 +95,7 @@ const goToNextPage = () => {
 </script>
 
 <template>
-  <div class="flex flex-col gap-4 px-2 py-4">
+  <div class="flex flex-col gap-4 px-2 py-4 bg-background text-foreground">
     <!-- Pagination Controls -->
     <div
       v-if="pagination && pagination.meta.last_page > 1"
@@ -138,12 +138,12 @@ const goToNextPage = () => {
             v-for="(page, index) in visiblePages"
             :key="index"
           >
-            <button
+              <button
               v-if="page !== '...'"
               :class="[
                 'inline-flex items-center justify-center h-10 min-w-10 px-3 text-sm font-medium transition-colors rounded-md',
                 page === pagination.meta.current_page
-                  ? 'bg-primary text-primary-foreground hover:bg-primary/90'
+                  ? 'bg-primary text-primary-foreground hover:bg-primary/90 dark:bg-primary dark:text-primary-foreground'
                   : 'hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-200'
               ]"
               @click="goToPage(page as number)"
@@ -209,7 +209,7 @@ const goToNextPage = () => {
         <span>Rows per page:</span>
         <select
           :value="currentPerPage || perPageOptions[0]"
-          class="h-10 rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+          class="h-10 rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 dark:bg-gray-800 dark:text-gray-200 dark:border-gray-700"
           @change="emit('perPageChange', Number(($event.target as HTMLSelectElement).value) || perPageOptions[0])"
         >
           <option
