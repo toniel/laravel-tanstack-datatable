@@ -95,121 +95,31 @@ const goToNextPage = () => {
 </script>
 
 <template>
-  <div class="flex flex-col gap-4 px-2 py-4 bg-background text-foreground">
-    <!-- Pagination Controls -->
-    <div
-      v-if="pagination && pagination.meta.last_page > 1"
-      class="flex justify-center"
-    >
-      <nav class="flex items-center gap-1" role="navigation" aria-label="pagination">
-        <!-- First Page -->
-        <button
-          :disabled="!canGoPrevious"
-          :class="[
-            'inline-flex items-center justify-center gap-1 h-10 px-4 py-2 text-sm font-medium transition-colors rounded-md',
-            canGoPrevious
-              ? 'hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-200'
-              : 'opacity-50 cursor-not-allowed text-gray-400 dark:text-gray-600'
-          ]"
-          @click="goToFirstPage"
-        >
-          <ChevronsLeft class="h-4 w-4" />
-          <span class="hidden sm:inline">First</span>
-        </button>
-
-        <!-- Previous Page -->
-        <button
-          :disabled="!canGoPrevious"
-          :class="[
-            'inline-flex items-center justify-center gap-1 h-10 px-4 py-2 text-sm font-medium transition-colors rounded-md',
-            canGoPrevious
-              ? 'hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-200'
-              : 'opacity-50 cursor-not-allowed text-gray-400 dark:text-gray-600'
-          ]"
-          @click="goToPreviousPage"
-        >
-          <ChevronLeft class="h-4 w-4" />
-          <span class="hidden sm:inline">Previous</span>
-        </button>
-
-        <!-- Page Numbers -->
-        <div class="flex items-center gap-1">
-          <template
-            v-for="(page, index) in visiblePages"
-            :key="index"
-          >
-              <button
-              v-if="page !== '...'"
-              :class="[
-                'inline-flex items-center justify-center h-10 min-w-10 px-3 text-sm font-medium transition-colors rounded-md',
-                page === pagination.meta.current_page
-                  ? 'bg-primary text-primary-foreground hover:bg-primary/90 dark:bg-primary dark:text-primary-foreground'
-                  : 'hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-200'
-              ]"
-              @click="goToPage(page as number)"
-            >
-              {{ page }}
-            </button>
-            <span
-              v-else
-              class="inline-flex items-center justify-center h-10 min-w-10 px-3 text-gray-500"
-            >
-              ...
-            </span>
-          </template>
-        </div>
-
-        <!-- Next Page -->
-        <button
-          :disabled="!canGoNext"
-          :class="[
-            'inline-flex items-center justify-center gap-1 h-10 px-4 py-2 text-sm font-medium transition-colors rounded-md',
-            canGoNext
-              ? 'hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-200'
-              : 'opacity-50 cursor-not-allowed text-gray-400 dark:text-gray-600'
-          ]"
-          @click="goToNextPage"
-        >
-          <span class="hidden sm:inline">Next</span>
-          <ChevronRight class="h-4 w-4" />
-        </button>
-
-        <!-- Last Page -->
-        <button
-          :disabled="!canGoNext"
-          :class="[
-            'inline-flex items-center justify-center gap-1 h-10 px-4 py-2 text-sm font-medium transition-colors rounded-md',
-            canGoNext
-              ? 'hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-200'
-              : 'opacity-50 cursor-not-allowed text-gray-400 dark:text-gray-600'
-          ]"
-          @click="goToLastPage"
-        >
-          <span class="hidden sm:inline">Last</span>
-          <ChevronsRight class="h-4 w-4" />
-        </button>
-      </nav>
+  <div
+    class="flex flex-col items-center justify-between gap-4 px-2 py-2 sm:flex-row text-foreground bg-background"
+  >
+    <!-- Left side: "Showing X to Y of Z entries" -->
+    <div class="text-sm text-muted-foreground">
+      <template v-if="pagination && pagination.meta.total > 0">
+        Showing {{ pagination.meta.from }} to {{ pagination.meta.to }} of
+        {{ pagination.meta.total }} entries
+      </template>
+      <template v-else>
+        No entries to show
+      </template>
     </div>
 
-    <!-- Table Info and Per Page Controls -->
-    <div class="flex items-center justify-between text-sm text-gray-600 dark:text-gray-300">
-      <div>
-        <template v-if="pagination && pagination.meta.total > 0">
-          Showing {{ pagination.meta.from }} to {{ pagination.meta.to }} of {{ pagination.meta.total }} entries
-        </template>
-        <template v-else>
-          No entries found
-        </template>
-      </div>
-
+    <!-- Right side: Pagination and Per-page selector -->
+    <div class="flex flex-col items-center gap-4 sm:flex-row">
+      <!-- Per-page selector -->
       <div
         v-if="showPerPageSelector"
         class="flex items-center gap-2"
       >
-        <span>Rows per page:</span>
+        <span class="text-sm">Rows per page:</span>
         <select
           :value="currentPerPage || perPageOptions[0]"
-          class="h-10 rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 dark:bg-gray-800 dark:text-gray-200 dark:border-gray-700"
+          class="h-10 rounded-md border border-input bg-transparent px-3 py-2 text-sm ring-offset-background focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
           @change="emit('perPageChange', Number(($event.target as HTMLSelectElement).value) || perPageOptions[0])"
         >
           <option
@@ -222,8 +132,99 @@ const goToNextPage = () => {
         </select>
       </div>
 
-      <div v-if="pagination">
-        Page {{ pagination.meta.current_page }} of {{ pagination.meta.last_page }}
+      <!-- Pagination controls -->
+      <div
+        v-if="pagination && pagination.meta.last_page > 1"
+        class="flex items-center justify-center"
+      >
+        <nav class="flex items-center gap-1" role="navigation" aria-label="pagination">
+          <!-- First Page -->
+          <button
+            :disabled="!canGoPrevious"
+            :class="[
+              'inline-flex items-center justify-center gap-1 h-10 w-10 text-sm font-medium transition-colors rounded-md p-2',
+              canGoPrevious
+                ? 'hover:bg-accent hover:text-accent-foreground'
+                : 'opacity-50 cursor-not-allowed',
+            ]"
+            @click="goToFirstPage"
+          >
+            <ChevronsLeft class="h-5 w-5" />
+            <span class="sr-only">First</span>
+          </button>
+
+          <!-- Previous Page -->
+          <button
+            :disabled="!canGoPrevious"
+            :class="[
+              'inline-flex items-center justify-center gap-1 h-10 w-10 text-sm font-medium transition-colors rounded-md p-2',
+              canGoPrevious
+                ? 'hover:bg-accent hover:text-accent-foreground'
+                : 'opacity-50 cursor-not-allowed',
+            ]"
+            @click="goToPreviousPage"
+          >
+            <ChevronLeft class="h-5 w-5" />
+            <span class="sr-only">Previous</span>
+          </button>
+
+          <!-- Page Numbers -->
+          <div class="hidden items-center gap-1 sm:flex">
+            <template
+              v-for="(page, index) in visiblePages"
+              :key="index"
+            >
+              <button
+                v-if="page !== '...'"
+                :class="[
+                  'inline-flex items-center justify-center h-10 min-w-10 px-3 text-sm font-medium transition-colors rounded-md',
+                  page === pagination.meta.current_page
+                    ? 'bg-primary text-primary-foreground hover:bg-primary/90'
+                    : 'hover:bg-accent hover:text-accent-foreground',
+                ]"
+                @click="goToPage(page as number)"
+              >
+                {{ page }}
+              </button>
+              <span
+                v-else
+                class="inline-flex items-center justify-center h-10 min-w-10 px-3 text-muted-foreground"
+              >
+                ...
+              </span>
+            </template>
+          </div>
+
+          <!-- Next Page -->
+          <button
+            :disabled="!canGoNext"
+            :class="[
+              'inline-flex items-center justify-center gap-1 h-10 w-10 text-sm font-medium transition-colors rounded-md p-2',
+              canGoNext
+                ? 'hover:bg-accent hover:text-accent-foreground'
+                : 'opacity-50 cursor-not-allowed',
+            ]"
+            @click="goToNextPage"
+          >
+            <ChevronRight class="h-5 w-5" />
+            <span class="sr-only">Next</span>
+          </button>
+
+          <!-- Last Page -->
+          <button
+            :disabled="!canGoNext"
+            :class="[
+              'inline-flex items-center justify-center gap-1 h-10 w-10 text-sm font-medium transition-colors rounded-md p-2',
+              canGoNext
+                ? 'hover:bg-accent hover:text-accent-foreground'
+                : 'opacity-50 cursor-not-allowed',
+            ]"
+            @click="goToLastPage"
+          >
+            <ChevronsRight class="h-5 w-5" />
+            <span class="sr-only">Last</span>
+          </button>
+        </nav>
       </div>
     </div>
   </div>

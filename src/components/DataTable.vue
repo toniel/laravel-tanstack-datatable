@@ -286,24 +286,24 @@ defineExpose({
               ({{ selectedRowCount }} selected)
             </span>
           </caption>
-          <thead class="[&_tr]:border-b dark:[&_tr]:border-gray-700">
+          <thead class="[&_tr]:border-b bg-muted">
             <tr
               v-for="headerGroup in table.getHeaderGroups()"
               :key="headerGroup.id"
-              class="border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted dark:hover:bg-gray-800"
+              class="border-b transition-colors"
             >
               <th
                 v-for="header in headerGroup.headers"
                 :key="header.id"
                 :colspan="header.colSpan"
-                class="h-12 px-4 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0 dark:text-gray-400"
+                class="h-12 px-4 text-left align-middle font-bold text-muted-foreground [&:has([role=checkbox])]:pr-0"
               >
                 <div
                   v-if="!header.isPlaceholder"
                   :class="[
                     'flex items-center gap-2',
                     header.column.getCanSort()
-                      ? 'cursor-pointer select-none hover:bg-gray-50 dark:hover:bg-gray-800 p-2 rounded transition-colors'
+                      ? 'cursor-pointer select-none hover:bg-accent p-2 rounded transition-colors'
                       : '',
                   ]"
                   @click="
@@ -372,18 +372,23 @@ defineExpose({
               </tr>
             </template>
           </tbody>
+          <tfoot v-if="pagination && pagination.meta.last_page > 1" class="border-t">
+            <tr>
+              <td :colspan="columns.length" class="p-0">
+                <!-- Pagination Component -->
+                <DataTablePagination
+                  :pagination="pagination"
+                  :current-per-page="currentPerPage"
+                  :per-page-options="perPageOptions"
+                  :show-per-page-selector="showPerPageSelector"
+                  @page-change="emit('pageChange', $event)"
+                  @per-page-change="emit('perPageChange', $event)"
+                />
+              </td>
+            </tr>
+          </tfoot>
         </table>
       </div>
-
-      <!-- Pagination Component -->
-      <DataTablePagination
-        :pagination="pagination"
-        :current-per-page="currentPerPage"
-        :per-page-options="perPageOptions"
-        :show-per-page-selector="showPerPageSelector"
-        @page-change="emit('pageChange', $event)"
-        @per-page-change="emit('perPageChange', $event)"
-      />
     </div>
   </div>
 </template>
