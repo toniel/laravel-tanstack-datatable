@@ -7,7 +7,7 @@ import {
   type ColumnDef,
   type RowSelectionState,
 } from "@tanstack/vue-table";
-import { ChevronDown, ChevronUp, ChevronsUpDown } from "lucide-vue-next";
+import { ChevronDown, ChevronUp, ChevronsUpDown, CircleX, Inbox, RefreshCw } from "lucide-vue-next";
 import { computed } from "vue";
 import DataTablePagination from "./DataTablePagination.vue";
 
@@ -30,7 +30,6 @@ interface Props {
 
   // UI Optiondels
   showSearch?: boolean;
-  showCaption?: boolean;
   showPerPageSelector?: boolean;
 
   // Text customization
@@ -64,13 +63,12 @@ const props = withDefaults(defineProps<Props>(), {
   enableRowSelection: false,
   getRowId: (row: any) => row.id,
   showSearch: true,
-  showCaption: true,
   showPerPageSelector: true,
   title: "Items",
   itemName: "items",
   loadingText: "Loading...",
   errorTitle: "Error loading data",
-  emptyStateText: "📭 No items found",
+  emptyStateText: "No items found",
 });
 
 // Computed properties for selection info
@@ -151,7 +149,7 @@ defineExpose({
 </script>
 
 <template>
-  <div class="flex flex-col gap-4 bg-background text-foreground">
+  <div class="p-4 flex flex-col gap-4 bg-background text-foreground">
     <!-- Search Input, Filters, and Header Section -->
     <div
       class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between"
@@ -167,7 +165,7 @@ defineExpose({
             :value="search"
             type="search"
             placeholder="Search..."
-            class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 ps-14 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-gray-800 dark:text-gray-200 dark:placeholder:text-gray-400"
+            class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 ps-14 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
             @input="
               emit('searchChange', ($event.target as HTMLInputElement).value)
             "
@@ -236,17 +234,19 @@ defineExpose({
 
     <!-- Error State -->
     <div v-else-if="error" class="flex flex-col items-center p-8">
-      <div class="mb-2 text-lg text-red-600 dark:text-red-400">
-        ❌ {{ errorTitle }}
+      <div class="flex items-center gap-2 mb-2 text-lg text-red-600 dark:text-red-400">
+        <CircleX class="size-6" />
+        <span>{{ errorTitle }}</span>
       </div>
       <div class="mb-4 text-sm text-gray-600 dark:text-gray-300">
         {{ error.message }}
       </div>
       <button
-        class="px-4 py-2 text-white transition-colors bg-gray-900 rounded-md hover:bg-gray-800 dark:bg-gray-100 dark:text-gray-900 dark:hover:bg-gray-200"
+        class="flex items-center gap-2 px-4 py-2 text-white transition-colors bg-gray-900 rounded-md hover:bg-gray-800 dark:bg-gray-100 dark:text-gray-900 dark:hover:bg-gray-200"
         @click="emit('retry')"
       >
-        🔄 Retry
+        <RefreshCw class="size-4" />
+        <span>Retry</span>
       </button>
     </div>
 
@@ -265,27 +265,7 @@ defineExpose({
 
       <div class="relative w-full overflow-auto">
         <table class="w-full caption-bottom text-sm">
-          <caption
-            v-if="showCaption"
-            class="mt-4 text-sm text-muted-foreground dark:text-gray-400"
-          >
-            {{
-              title
-            }}
-            - Total:
-            {{
-              pagination?.meta?.total || 0
-            }}
-            {{
-              itemName
-            }}
-            <span
-              v-if="enableRowSelection && selectedRowCount > 0"
-              class="ml-2 text-blue-600 dark:text-blue-400"
-            >
-              ({{ selectedRowCount }} selected)
-            </span>
-          </caption>
+
           <thead class="[&_tr]:border-b bg-muted">
             <tr
               v-for="headerGroup in table.getHeaderGroups()"
@@ -367,7 +347,10 @@ defineExpose({
             <template v-else>
               <tr>
                 <td :colspan="columns.length" class="h-24 text-center dark:text-gray-400">
-                  {{ emptyStateText }}
+                  <div class="flex flex-col items-center gap-2">
+                    <Inbox class="size-8 text-muted-foreground" />
+                    <span>{{ emptyStateText }}</span>
+                  </div>
                 </td>
               </tr>
             </template>

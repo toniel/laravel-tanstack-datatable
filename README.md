@@ -7,9 +7,9 @@
 
 Vue 3 DataTable components for Laravel pagination with TanStack Query and TanStack Table.
 
-> 🔗 **Companion Package**: This package works together with [`@toniel/laravel-tanstack-pagination`](https://github.com/toniel/laravel-tanstack-pagination) - the core composables library.
+> **Companion Package**: This package works together with [`@toniel/laravel-tanstack-pagination`](https://github.com/toniel/laravel-tanstack-pagination) - the core composables library.
 
-## 📦 Installation
+## Installation
 
 ```bash
 npm install @toniel/laravel-tanstack-datatable @toniel/laravel-tanstack-pagination
@@ -29,7 +29,7 @@ This package requires the following peer dependencies:
 npm install vue @tanstack/vue-query @tanstack/vue-table
 ```
 
-## 🚀 Quick Start
+## Quick Start
 
 ### Basic Usage
 
@@ -105,18 +105,18 @@ const {
 </template>
 ```
 
-## 🎯 Features
+## Features
 
-### ✅ Core Features
-- 🔍 **Search** with debounce
-- 📄 **Pagination** with Laravel meta
-- 🔄 **Sorting** (client & server-side)
-- 📊 **Row selection** with bulk actions
-- 🎨 **Dark mode** support
-- ⚡ **Loading states** & error handling
-- 🔧 **Fully customizable** via slots
+### Core Features
+- **Search** with debounce
+- **Pagination** with Laravel meta
+- **Sorting** (client & server-side)
+- **Row selection** with bulk actions
+- **Dark mode** support
+- **Loading states** & error handling
+- **Fully customizable** via slots
 
-### 🎨 Component Props
+### Component Props
 
 #### DataTable Props
 
@@ -142,7 +142,7 @@ const {
 | `itemName` | `string` | `'items'` | Item name for pluralization |
 | `loadingText` | `string` | `'Loading...'` | Loading text |
 | `errorTitle` | `string` | `'Error loading data'` | Error title |
-| `emptyStateText` | `string` | `'📭 No items found'` | Empty state text |
+| `emptyStateText` | `string` | `'No items found'` | Empty state text |
 
 #### DataTable Events
 
@@ -155,7 +155,7 @@ const {
 | `retry` | - | Emitted when retry button clicked |
 | `update:rowSelection` | `RowSelectionState` | Emitted when row selection changes |
 
-### 🎨 Slots
+### Slots
 
 #### `filters` Slot
 Add custom filters next to search input:
@@ -179,7 +179,7 @@ Add action buttons (e.g., Create button):
 <DataTable ...>
   <template #header>
     <button @click="openCreateModal" class="...">
-      ➕ Add User
+      Add User
     </button>
   </template>
 </DataTable>
@@ -196,7 +196,7 @@ Add bulk action buttons when rows are selected:
 >
   <template #bulk-actions="{ selectedIds, selectedData, clearSelection }">
     <button @click="bulkDelete(selectedIds)" class="...">
-      🗑️ Delete Selected
+      Delete Selected
     </button>
     <button @click="clearSelection" class="...">
       Clear
@@ -205,7 +205,7 @@ Add bulk action buttons when rows are selected:
 </DataTable>
 ```
 
-## 📖 Advanced Examples
+## Advanced Examples
 
 ### With Row Selection
 
@@ -278,7 +278,7 @@ const columns = [
 </script>
 ```
 
-## 🎨 Styling
+## Styling
 
 This package uses Tailwind CSS utility classes. Make sure Tailwind is configured in your project.
 
@@ -304,7 +304,7 @@ You can override styles using Tailwind classes or custom CSS:
 }
 ```
 
-## 🎨 Theming
+## Theming
 
 The components use Tailwind CSS and support dark mode out of the box. You can customize colors by:
 
@@ -330,19 +330,19 @@ module.exports = {
 }
 ```
 
-## 🔗 Related Packages
+## Related Packages
 
 - [`@toniel/laravel-tanstack-pagination`](https://github.com/toniel/laravel-tanstack-pagination) - Core composables (required)
 - [`@tanstack/vue-query`](https://tanstack.com/query/latest/docs/vue/overview) - Data fetching & caching
 - [`@tanstack/vue-table`](https://tanstack.com/table/latest/docs/framework/vue/vue-table) - Table state management
 
-## 🌟 Show Your Support
+## Show Your Support
 
 If this package helped you, please consider:
-- ⭐ Starring the [GitHub repository](https://github.com/toniel/laravel-tanstack-datatable)
-- 🐛 [Reporting bugs](https://github.com/toniel/laravel-tanstack-datatable/issues)
-- 💡 [Suggesting new features](https://github.com/toniel/laravel-tanstack-datatable/issues)
-- 🔧 [Contributing code](https://github.com/toniel/laravel-tanstack-datatable/pulls)
+- Starring the [GitHub repository](https://github.com/toniel/laravel-tanstack-datatable)
+- [Reporting bugs](https://github.com/toniel/laravel-tanstack-datatable/issues)
+- [Suggesting new features](https://github.com/toniel/laravel-tanstack-datatable/issues)
+- [Contributing code](https://github.com/toniel/laravel-tanstack-datatable/pulls)
 
 ## 📄 License
 
