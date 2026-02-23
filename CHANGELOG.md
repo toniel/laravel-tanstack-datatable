@@ -7,6 +7,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.8] - 2026-02-23
+
+### Added
+- `useRowSelection` composable for reusable row selection logic with helpers:
+  - `rowSelection`, `selectedRowIds`, `selectedRowData`
+  - `clearSelection`, `toggleAllCurrentPage`, `toggleRowSelection`
+  - `selectRows`, `deselectRows`, `getSelectionColumn`
+- `showSelectionInfo` prop to control selection info bar visibility (optional)
+- `selection-info` slot for fully customizable selection UI
+- Export `useRowSelection` composable and related types from package
+
+### Changed
+- Selection info bar is now optional and can be hidden or replaced with custom UI
+- Improved documentation for row selection features
+
+## [0.1.7] - 2026-02-07
+
+### Changed
+- Improved per page select component styling
+
+## [0.1.6] - 2026-02-07
+
+### Changed
+- Improved datatable pagination and header styles
+
 ## [0.1.5] - 2026-02-07
 
 ### Changed
@@ -104,7 +129,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Slot documentation
 - Dark mode setup guide
 
-[Unreleased]: https://github.com/toniel/laravel-tanstack-datatable/compare/v0.1.5...HEAD
+[Unreleased]: https://github.com/toniel/laravel-tanstack-datatable/compare/v0.1.8...HEAD
+[0.1.8]: https://github.com/toniel/laravel-tanstack-datatable/compare/v0.1.7...v0.1.8
+[0.1.7]: https://github.com/toniel/laravel-tanstack-datatable/compare/v0.1.6...v0.1.7
+[0.1.6]: https://github.com/toniel/laravel-tanstack-datatable/compare/v0.1.5...v0.1.6
 [0.1.5]: https://github.com/toniel/laravel-tanstack-datatable/compare/v0.1.4...v0.1.5
 [0.1.4]: https://github.com/toniel/laravel-tanstack-datatable/compare/v0.1.3...v0.1.4
 [0.1.3]: https://github.com/toniel/laravel-tanstack-datatable/compare/v0.1.2...v0.1.3
