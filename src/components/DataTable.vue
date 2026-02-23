@@ -27,6 +27,7 @@ interface Props {
   rowSelection?: RowSelectionState;
   enableRowSelection?: boolean;
   getRowId?: (row: any) => string;
+  showSelectionInfo?: boolean;
 
   // UI Optiondels
   showSearch?: boolean;
@@ -62,6 +63,7 @@ const props = withDefaults(defineProps<Props>(), {
   rowSelection: () => ({}),
   enableRowSelection: false,
   getRowId: (row: any) => row.id,
+  showSelectionInfo: true,
   showSearch: true,
   showPerPageSelector: true,
   title: "Items",
@@ -185,42 +187,52 @@ defineExpose({
     </div>
 
     <!-- Selection Info & Bulk Actions -->
-    <div
-      v-if="enableRowSelection && selectedRowCount > 0"
-      class="flex items-center justify-between p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg"
-    >
-      <div class="flex items-center gap-4">
-        <span class="text-sm font-medium text-blue-700 dark:text-blue-300">
-          {{ selectedRowCount }} {{ itemName }} selected
-        </span>
-        <div class="text-xs text-blue-600 dark:text-blue-400">
-          IDs: {{ selectedRowIds.slice(0, 5).join(", ")
-          }}{{ selectedRowIds.length > 5 ? "..." : "" }}
-        </div>
-      </div>
-
-      <!-- Bulk Action Slot -->
-      <div class="flex items-center gap-2">
-        <slot
-          name="bulk-actions"
-          :selected-ids="selectedRowIds"
-          :selected-data="selectedRowData"
-          :selected-count="selectedRowCount"
-          :clear-selection="clearSelection"
-          :select-all-current-page="selectAllCurrentPage"
-          :deselect-all-current-page="deselectAllCurrentPage"
-        />
-
-        <!-- Default clear button if no bulk actions provided -->
-        <button
-          v-if="!$slots['bulk-actions']"
-          @click="clearSelection"
-          class="px-3 py-1 text-sm text-blue-700 dark:text-blue-300 hover:bg-blue-100 dark:hover:bg-blue-800 rounded transition-colors"
+    <template v-if="enableRowSelection && selectedRowCount > 0">
+      <slot
+        name="selection-info"
+        :selected-ids="selectedRowIds"
+        :selected-data="selectedRowData"
+        :selected-count="selectedRowCount"
+        :clear-selection="clearSelection"
+        :select-all-current-page="selectAllCurrentPage"
+        :deselect-all-current-page="deselectAllCurrentPage"
+      >
+        <div
+          v-if="showSelectionInfo"
+          class="flex items-center justify-between p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg"
         >
-          Clear Selection
-        </button>
-      </div>
-    </div>
+          <div class="flex items-center gap-4">
+            <span class="text-sm font-medium text-blue-700 dark:text-blue-300">
+              {{ selectedRowCount }} {{ itemName }} selected
+            </span>
+            <div class="text-xs text-blue-600 dark:text-blue-400">
+              IDs: {{ selectedRowIds.slice(0, 5).join(", ")
+              }}{{ selectedRowIds.length > 5 ? "..." : "" }}
+            </div>
+          </div>
+
+          <div class="flex items-center gap-2">
+            <slot
+              name="bulk-actions"
+              :selected-ids="selectedRowIds"
+              :selected-data="selectedRowData"
+              :selected-count="selectedRowCount"
+              :clear-selection="clearSelection"
+              :select-all-current-page="selectAllCurrentPage"
+              :deselect-all-current-page="deselectAllCurrentPage"
+            />
+
+            <button
+              v-if="!$slots['bulk-actions']"
+              @click="clearSelection"
+              class="px-3 py-1 text-sm text-blue-700 dark:text-blue-300 hover:bg-blue-100 dark:hover:bg-blue-800 rounded transition-colors"
+            >
+              Clear Selection
+            </button>
+          </div>
+        </div>
+      </slot>
+    </template>
 
     <!-- Loading State -->
     <div v-if="isLoading && !data" class="flex items-center justify-center p-8">

@@ -135,6 +135,7 @@ const {
 | `enableRowSelection` | `boolean` | `false` | Enable row selection |
 | `rowSelection` | `RowSelectionState` | `{}` | Selected rows state |
 | `getRowId` | `Function` | `(row) => row.id` | Get unique row ID |
+| `showSelectionInfo` | `boolean` | `true` | Show selection info bar when rows are selected |
 | `showSearch` | `boolean` | `true` | Show search input |
 | `showCaption` | `boolean` | `true` | Show table caption |
 | `showPerPageSelector` | `boolean` | `true` | Show per page selector |
@@ -204,6 +205,33 @@ Add bulk action buttons when rows are selected:
   </template>
 </DataTable>
 ```
+
+#### `selection-info` Slot
+Fully customize the selection info bar (replaces the default blue bar):
+
+```vue
+<DataTable
+  :enable-row-selection="true"
+  v-model:row-selection="selectedRows"
+  ...
+>
+  <template #selection-info="{ selectedIds, selectedData, selectedCount, clearSelection }">
+    <div class="your-custom-class">
+      {{ selectedCount }} items selected
+      <button @click="handleBulkAction(selectedIds)">Action</button>
+      <button @click="clearSelection">Clear</button>
+    </div>
+  </template>
+</DataTable>
+```
+
+Slot props available:
+- `selectedIds` - Array of selected row IDs
+- `selectedData` - Array of selected row data objects
+- `selectedCount` - Number of selected rows
+- `clearSelection` - Function to clear all selections
+- `selectAllCurrentPage` - Function to select all rows on current page
+- `deselectAllCurrentPage` - Function to deselect all rows on current page
 
 ## Advanced Examples
 
@@ -276,6 +304,99 @@ const columns = [
   // ... other columns
 ]
 </script>
+```
+
+### Using `useRowSelection` Composable
+
+For more control over row selection, use the `useRowSelection` composable:
+
+```vue
+<script setup lang="ts">
+import { ref } from 'vue'
+import { useRowSelection } from '@toniel/laravel-tanstack-datatable'
+import { createColumnHelper } from '@tanstack/vue-table'
+
+interface User {
+  id: number
+  name: string
+  email: string
+}
+
+const tableData = ref<User[]>([])
+
+const {
+  rowSelection,
+  selectedRowIds,
+  selectedRowData,
+  isAllCurrentPageSelected,
+  clearSelection,
+  toggleAllCurrentPage,
+  toggleRowSelection,
+  getSelectionColumn,
+} = useRowSelection<User>({
+  data: tableData,
+  getRowId: (row) => String(row.id),
+})
+
+const columnHelper = createColumnHelper<User>()
+
+const columns = [
+  getSelectionColumn({ size: 50 }), // Automatic checkbox column
+  columnHelper.accessor('name', { header: 'Name' }),
+  columnHelper.accessor('email', { header: 'Email' }),
+]
+
+const handleBulkDelete = async () => {
+  await axios.delete('/api/users/bulk', { data: { ids: selectedRowIds.value } })
+  clearSelection()
+  // refetch data...
+}
+</script>
+
+<template>
+  <DataTable
+    :data="tableData"
+    :columns="columns"
+    :enable-row-selection="true"
+    v-model:row-selection="rowSelection"
+    :show-selection-info="false"
+  >
+    <template #selection-info="{ selectedIds, selectedCount, clearSelection }">
+      <div class="flex items-center gap-4 p-4 bg-red-50 rounded-lg">
+        <span>{{ selectedCount }} users selected</span>
+        <button @click="handleBulkDelete" class="btn-danger">Delete</button>
+        <button @click="clearSelection">Clear</button>
+      </div>
+    </template>
+  </DataTable>
+</template>
+```
+
+#### `useRowSelection` API
+
+| Property/Method | Type | Description |
+|-----------------|------|-------------|
+| `rowSelection` | `Ref<RowSelectionState>` | Reactive selection state |
+| `selectedRowIds` | `Ref<string[]>` | Array of selected row IDs |
+| `selectedRowData` | `Ref<T[]>` | Array of selected row data |
+| `isAllCurrentPageSelected` | `Ref<boolean>` | Whether all current page rows are selected |
+| `isSomeCurrentPageSelected` | `Ref<boolean>` | Whether some (but not all) rows are selected |
+| `clearSelection` | `() => void` | Clear all selections |
+| `toggleAllCurrentPage` | `() => void` | Toggle select all on current page |
+| `toggleRowSelection` | `(id: string) => void` | Toggle single row selection |
+| `selectRows` | `(ids: string[]) => void` | Select multiple rows by IDs |
+| `deselectRows` | `(ids: string[]) => void` | Deselect multiple rows by IDs |
+| `getSelectionColumn` | `(options?) => ColumnDef<T>` | Get a checkbox column definition |
+
+#### `getSelectionColumn` Options
+
+```ts
+getSelectionColumn({
+  headerClass: 'flex items-center justify-center',
+  cellClass: 'flex items-center justify-center',
+  checkboxClass: 'w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded',
+  size: 50,
+})
 ```
 
 ## Styling
