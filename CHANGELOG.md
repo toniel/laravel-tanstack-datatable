@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.9] - 2026-04-08
+
+### Fixed
+- Fixed filter state reset when changing pages - filters now persist correctly during pagination
+- Added `filters` prop to pass filter state to the component
+- Added `filterChange` event for emitting filter changes to parent
+- `#filters` slot now receives `filters` prop for accessing current filter state
+
+### Added
+- `filters` prop for receiving external filter state
+- `filterChange` event for emitting filter state changes
+- `#filters` slot now exposes `filters` prop
+
 ## [0.1.8] - 2026-02-23
 
 ### Added

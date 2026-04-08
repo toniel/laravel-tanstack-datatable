@@ -111,6 +111,7 @@ const {
 - **Search** with debounce
 - **Pagination** with Laravel meta
 - **Sorting** (client & server-side)
+- **Custom Filters** with state persistence across pages
 - **Row selection** with bulk actions
 - **Dark mode** support
 - **Loading states** & error handling
@@ -128,6 +129,7 @@ const {
 | `isLoading` | `boolean` | `false` | Loading state |
 | `error` | `Error` | `null` | Error object |
 | `search` | `string` | `''` | Search query |
+| `filters` | `Record<string, any>` | `{}` | Custom filter state |
 | `currentPerPage` | `number` | `10` | Current items per page |
 | `perPageOptions` | `number[]` | `[10,15,25,50,100]` | Per page options |
 | `sortBy` | `string` | `null` | Current sort column |
@@ -153,25 +155,34 @@ const {
 | `perPageChange` | `number` | Emitted when per page changes |
 | `searchChange` | `string` | Emitted when search input changes |
 | `sortChange` | `string` | Emitted when sort column changes |
+| `filterChange` | `Record<string, any>` | Emitted when filters change |
 | `retry` | - | Emitted when retry button clicked |
 | `update:rowSelection` | `RowSelectionState` | Emitted when row selection changes |
 
 ### Slots
 
 #### `filters` Slot
-Add custom filters next to search input:
+Add custom filters next to search input. The slot now provides the current filter state:
 
 ```vue
-<DataTable ...>
-  <template #filters>
-    <select v-model="status" class="...">
+<DataTable :filters="myFilters" @filter-change="handleFilterChange" ...>
+  <template #filters="{ filters }">
+    <select v-model="filters.status" class="...">
       <option value="">All Status</option>
       <option value="active">Active</option>
       <option value="inactive">Inactive</option>
     </select>
+    <select v-model="filters.category" class="...">
+      <option value="">All Categories</option>
+      <option value="A">Category A</option>
+      <option value="B">Category B</option>
+    </select>
   </template>
 </DataTable>
 ```
+
+**Slot Props:**
+- `filters` - Current filter state object (use for v-model bindings inside the slot)
 
 #### `header` Slot
 Add action buttons (e.g., Create button):
@@ -232,6 +243,169 @@ Slot props available:
 - `clearSelection` - Function to clear all selections
 - `selectAllCurrentPage` - Function to select all rows on current page
 - `deselectAllCurrentPage` - Function to deselect all rows on current page
+
+## Custom Filters
+
+This package supports custom filters that persist correctly when changing pages.
+
+### Basic Usage with `usePagination`
+
+The `usePagination` composable provides built-in filter management:
+
+```vue
+<script setup lang="ts">
+import { ref } from 'vue'
+import { usePagination } from '@toniel/laravel-tanstack-pagination'
+import { DataTable } from '@toniel/laravel-tanstack-datatable'
+
+// Use pagination composable with filter support
+const {
+  tableData,
+  pagination,
+  isLoading,
+  search,
+  currentPerPage,
+  sortBy,
+  sortDirection,
+  customFilters,
+  handlePageChange,
+  handlePerPageChange,
+  handleSearchChange,
+  handleSortChange,
+  setFilter,
+  removeFilter,
+  refetch,
+} = usePagination(
+  (filters) => axios.get('/api/users', { params: filters }),
+  { queryKey: 'users', defaultPerPage: 10 }
+)
+
+// Set custom filters
+const updateStatusFilter = (status: string) => {
+  if (status) {
+    setFilter('status', status)
+  } else {
+    removeFilter('status')
+  }
+  refetch()
+}
+
+const updateCategoryFilter = (category: string) => {
+  if (category) {
+    setFilter('category', category)
+  } else {
+    removeFilter('category')
+  }
+  refetch()
+}
+</script>
+
+<template>
+  <DataTable
+    :data="tableData"
+    :columns="columns"
+    :pagination="pagination"
+    :is-loading="isLoading"
+    :search="search"
+    :current-per-page="currentPerPage"
+    :sort-by="sortBy"
+    :sort-direction="sortDirection"
+    :filters="customFilters"
+    @page-change="handlePageChange"
+    @per-page-change="handlePerPageChange"
+    @search-change="handleSearchChange"
+    @sort-change="handleSortChange"
+    @filter-change="handleFilterChange"
+  >
+    <template #filters="{ filters }">
+      <select 
+        :value="filters.status || ''" 
+        @change="updateStatusFilter(($event.target as HTMLSelectElement).value)"
+      >
+        <option value="">All Status</option>
+        <option value="active">Active</option>
+        <option value="inactive">Inactive</option>
+      </select>
+    </template>
+  </DataTable>
+</template>
+```
+
+### Using `handleFilterChange`
+
+For bulk filter updates, use the `handleFilterChange` function:
+
+```vue
+<script setup lang="ts">
+const {
+  customFilters,
+  handleFilterChange,
+  handlePageChange,
+  // ...
+} = usePagination(fetchFn, { queryKey: 'users' })
+
+// Bulk update filters
+const applyFilters = (newFilters: Record<string, any>) => {
+  handleFilterChange(newFilters)
+}
+</script>
+
+<template>
+  <DataTable
+    :filters="customFilters"
+    @filter-change="handleFilterChange"
+    ...
+  />
+</template>
+```
+
+### Using Filters Slot with v-model
+
+For cleaner v-model binding inside the filters slot:
+
+```vue
+<script setup lang="ts">
+import { computed } from 'vue'
+import { usePagination } from '@toniel/laravel-tanstack-pagination'
+
+const {
+  customFilters,
+  handleFilterChange,
+  // ...
+} = usePagination(fetchFn, { queryKey: 'users' })
+
+// Create a writable computed for two-way binding
+const filtersModel = computed({
+  get: () => customFilters.value,
+  set: (val) => handleFilterChange(val)
+})
+</script>
+
+<template>
+  <DataTable
+    :filters="customFilters"
+    @filter-change="handleFilterChange"
+  >
+    <template #filters="{ filters }">
+      <!-- Direct v-model binding using filters from slot -->
+      <select v-model="filters.status">
+        <option value="">All Status</option>
+        <option value="active">Active</option>
+      </select>
+    </template>
+  </DataTable>
+</template>
+```
+
+### Filter Methods Reference
+
+| Method | Description |
+|--------|-------------|
+| `setFilter(key, value)` | Set a single filter key-value pair |
+| `removeFilter(key)` | Remove a filter by key |
+| `handleFilterChange(filters)` | Bulk update all filters at once |
+| `resetFilters()` | Reset all filters to defaults |
+| `customFilters` | Reactive ref containing current filter state |
 
 ## Advanced Examples
 

@@ -22,6 +22,7 @@ interface Props {
   perPageOptions?: number[];
   sortBy?: string | null;
   sortDirection?: "asc" | "desc";
+  filters?: Record<string, any>;
 
   // Row Selection Props
   rowSelection?: RowSelectionState;
@@ -46,6 +47,7 @@ const emit = defineEmits<{
   perPageChange: [perPage: number];
   searchChange: [search: string];
   sortChange: [column: string];
+  filterChange: [filters: Record<string, any>];
   retry: [];
   "update:rowSelection": [selection: RowSelectionState];
 }>();
@@ -60,6 +62,7 @@ const props = withDefaults(defineProps<Props>(), {
   perPageOptions: () => [10, 15, 25, 50, 100],
   sortBy: null,
   sortDirection: "asc",
+  filters: () => ({}),
   rowSelection: () => ({}),
   enableRowSelection: false,
   getRowId: (row: any) => row.id,
@@ -176,7 +179,7 @@ defineExpose({
 
         <!-- Custom Filter Slot -->
         <div class="flex items-center gap-2">
-          <slot name="filters" />
+          <slot name="filters" :filters="filters" />
         </div>
       </div>
 
