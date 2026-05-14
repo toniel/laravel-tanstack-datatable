@@ -113,6 +113,7 @@ const {
 - **Sorting** (client & server-side)
 - **Custom Filters** with state persistence across pages
 - **Row selection** with bulk actions
+- **Row styling** with conditional class support
 - **Dark mode** support
 - **Loading states** & error handling
 - **Fully customizable** via slots
@@ -141,6 +142,7 @@ const {
 | `showSearch` | `boolean` | `true` | Show search input |
 | `showCaption` | `boolean` | `true` | Show table caption |
 | `showPerPageSelector` | `boolean` | `true` | Show per page selector |
+| `rowClassName` | `string \| ((row: any) => string)` | `''` | Custom CSS class(es) for rows |
 | `title` | `string` | `'Items'` | Table title |
 | `itemName` | `string` | `'items'` | Item name for pluralization |
 | `loadingText` | `string` | `'Loading...'` | Loading text |
@@ -572,6 +574,43 @@ getSelectionColumn({
   size: 50,
 })
 ```
+
+## Row Styling
+
+Style rows conditionally using the `rowClassName` prop. Accept a static string for all rows, or a function for per-row styling.
+
+### Static Class
+
+Apply the same class to all rows:
+
+```vue
+<DataTable
+  :columns="columns"
+  :data="tableData"
+  row-class-name="bg-green-50 dark:bg-green-900/20"
+/>
+```
+
+### Conditional Per-Row Styling
+
+Use a function to style rows based on their data:
+
+```vue
+<DataTable
+  :columns="columns"
+  :data="tableData"
+  :row-class-name="(row) => {
+    if (row.status === 'active') return 'bg-green-50 dark:bg-green-900/20';
+    if (row.status === 'inactive') return 'bg-red-50 dark:bg-red-900/20';
+    if (row.status === 'pending') return 'bg-yellow-50 dark:bg-yellow-900/20';
+    if (row.priority === 'high') return 'border-l-4 border-l-orange-500';
+    if (row.amount > 1000000) return 'bg-purple-50 dark:bg-purple-900/20 font-semibold';
+    return '';
+  }"
+/>
+```
+
+The function receives `row.original` — the raw data object from your backend — so you can access any field.
 
 ## Styling
 
