@@ -30,9 +30,12 @@ interface Props {
   getRowId?: (row: any) => string;
   showSelectionInfo?: boolean;
 
-  // UI Optiondels
+  // UI Options
   showSearch?: boolean;
   showPerPageSelector?: boolean;
+
+  // Row Styling
+  rowClassName?: string | ((row: any) => string);
 
   // Text customization
   title?: string;
@@ -69,6 +72,7 @@ const props = withDefaults(defineProps<Props>(), {
   showSelectionInfo: true,
   showSearch: true,
   showPerPageSelector: true,
+  rowClassName: "" as any,
   title: "Items",
   itemName: "items",
   loadingText: "Loading...",
@@ -154,7 +158,7 @@ defineExpose({
 </script>
 
 <template>
-  <div class="p-4 flex flex-col gap-4 bg-background text-foreground">
+    <div class="p-4 flex flex-col gap-4 bg-background text-foreground">
     <!-- Search Input, Filters, and Header Section -->
     <div
       class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between"
@@ -343,6 +347,7 @@ defineExpose({
                   enableRowSelection && row.getIsSelected()
                     ? 'bg-blue-50 dark:bg-blue-900/20 border-l-4 border-l-blue-500'
                     : '',
+                  typeof rowClassName === 'function' ? rowClassName(row.original) : (rowClassName || ''),
                 ]"
               >
                 <td

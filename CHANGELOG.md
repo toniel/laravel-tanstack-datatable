@@ -5,7 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [0.1.10] - 2026-05-14
+
+### Added
+- `rowClassName` prop for conditional row styling
+  - Accepts a static string or a function `(row: any) => string` for per-row class customization
+  - Example: `row-class-name="bg-green-50"` or `:row-class-name="(row) => row.status === 'active' ? 'bg-green-50' : 'bg-red-50'"`
 
 ## [0.1.9] - 2026-04-08
 
@@ -142,8 +147,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Slot documentation
 - Dark mode setup guide
 
-[Unreleased]: https://github.com/toniel/laravel-tanstack-datatable/compare/v0.1.8...HEAD
-[0.1.8]: https://github.com/toniel/laravel-tanstack-datatable/compare/v0.1.7...v0.1.8
+[Unreleased]: https://github.com/toniel/laravel-tanstack-datatable/compare/v0.1.10...HEAD
+[0.1.10]: https://github.com/toniel/laravel-tanstack-datatable/compare/v0.1.9...v0.1.10
+[0.1.9]: https://github.com/toniel/laravel-tanstack-datatable/compare/v0.1.8...v0.1.9
 [0.1.7]: https://github.com/toniel/laravel-tanstack-datatable/compare/v0.1.6...v0.1.7
 [0.1.6]: https://github.com/toniel/laravel-tanstack-datatable/compare/v0.1.5...v0.1.6
 [0.1.5]: https://github.com/toniel/laravel-tanstack-datatable/compare/v0.1.4...v0.1.5
