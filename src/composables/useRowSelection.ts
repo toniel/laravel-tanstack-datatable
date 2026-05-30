@@ -1,5 +1,5 @@
 import type { ColumnDef, RowSelectionState } from "@tanstack/vue-table";
-import { computed, h, nextTick, ref, type Ref } from "vue";
+import { computed, h, ref, type Ref } from "vue";
 
 export interface UseRowSelectionOptions<T> {
   data: Ref<T[]>;
@@ -123,21 +123,19 @@ export function useRowSelection<T>(
     return {
       id: "select",
       header: () => {
-        const checkbox = h("input", {
-          type: "checkbox",
-          class: checkboxClass,
-          checked: isAllCurrentPageSelected.value,
-          onChange: toggleAllCurrentPage,
-        });
-        
-        if (isSomeCurrentPageSelected.value) {
-          nextTick(() => {
-            const el = checkbox.el as HTMLInputElement | undefined;
-            if (el) el.indeterminate = true;
-          });
-        }
-        
-        return h("div", { class: headerClass }, [checkbox]);
+        const indeterminate = isSomeCurrentPageSelected.value;
+        return h("div", { class: headerClass }, [
+          h("input", {
+            type: "checkbox",
+            class: checkboxClass,
+            checked: isAllCurrentPageSelected.value,
+            indeterminate,
+            ref: (el: any) => {
+              if (el) el.indeterminate = indeterminate;
+            },
+            onChange: toggleAllCurrentPage,
+          }),
+        ]);
       },
       cell: ({ row }) => {
         const id = String(getRowId(row.original));
