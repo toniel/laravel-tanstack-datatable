@@ -110,7 +110,7 @@ const goToNextPage = () => {
         <p class="text-sm text-muted-foreground">Rows per page:</p>
         <select
           :value="currentPerPage"
-          class="rounded-md border border-gray-300 bg-white px-2 py-1 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary"
+          class="rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-2 py-1 text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary"
           @change="
             emit(
               'perPageChange',
@@ -135,7 +135,7 @@ const goToNextPage = () => {
         >
           <button
             :disabled="!canGoPrevious"
-            class="relative inline-flex items-center rounded-l-md border border-gray-300 bg-white px-2 py-2 text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
+            class="relative inline-flex items-center rounded-l-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-2 py-2 text-sm font-medium text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:cursor-not-allowed disabled:opacity-50"
             @click="goToPreviousPage"
           >
             <span class="sr-only">Previous</span>
@@ -149,7 +149,7 @@ const goToNextPage = () => {
                 'relative inline-flex items-center border px-4 py-2 text-sm font-medium',
                 page === pagination.meta.current_page
                   ? 'z-10 border-primary bg-primary/10 text-primary'
-                  : 'border-gray-300 bg-white text-gray-500 hover:bg-gray-50',
+                  : 'border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700',
               ]"
               @click="goToPage(page as number)"
             >
@@ -157,7 +157,7 @@ const goToNextPage = () => {
             </button>
             <span
               v-else
-              class="relative inline-flex items-center border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700"
+              class="relative inline-flex items-center border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-400"
             >
               ...
             </span>
@@ -165,7 +165,7 @@ const goToNextPage = () => {
 
           <button
             :disabled="!canGoNext"
-            class="relative inline-flex items-center rounded-r-md border border-gray-300 bg-white px-2 py-2 text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
+            class="relative inline-flex items-center rounded-r-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-2 py-2 text-sm font-medium text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:cursor-not-allowed disabled:opacity-50"
             @click="goToNextPage"
           >
             <span class="sr-only">Next</span>

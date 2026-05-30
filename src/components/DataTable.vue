@@ -103,14 +103,18 @@ const table = useVueTable({
   get data() {
     return props.data || [];
   },
-  columns: props.columns,
+  get columns() {
+    return props.columns;
+  },
   getCoreRowModel: getCoreRowModel(),
   enableSorting: true,
   manualSorting: true,
   enableRowSelection: props.enableRowSelection,
   getRowId: props.getRowId,
   state: {
-    rowSelection: props.rowSelection || {},
+    get rowSelection() {
+      return props.rowSelection || {};
+    },
   },
   onRowSelectionChange: (updater) => {
     const newSelection =
@@ -167,14 +171,11 @@ defineExpose({
       <div class="flex flex-col gap-2 sm:flex-row sm:items-center">
         <!-- Search Input -->
         <div v-if="showSearch" class="relative w-full max-w-sm">
-          <!-- <div class="pointer-events-none absolute inset-y-0 start-0 flex items-center ps-3">
-            <Search class="size-5 text-muted-foreground" />
-          </div> -->
           <input
             :value="search"
             type="search"
             placeholder="Search..."
-            class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 ps-14 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+            class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
             @input="
               emit('searchChange', ($event.target as HTMLInputElement).value)
             "
@@ -242,7 +243,7 @@ defineExpose({
     </template>
 
     <!-- Loading State -->
-    <div v-if="isLoading && !data" class="flex items-center justify-center p-8">
+    <div v-if="isLoading && data.length === 0" class="flex items-center justify-center p-8">
       <div
         class="w-8 h-8 mr-3 border-b-2 border-gray-900 dark:border-gray-100 rounded-full animate-spin"
       />
