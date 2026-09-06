@@ -1,12 +1,13 @@
-import type { ColumnDef, RowSelectionState } from "@tanstack/vue-table";
+import type { ColumnDef, RowData, RowSelectionState } from "@tanstack/vue-table";
 import { computed, h, ref, type Ref } from "vue";
+import type { DataTableFeatures } from "../lib/features";
 
-export interface UseRowSelectionOptions<T> {
+export interface UseRowSelectionOptions<T extends RowData> {
   data: Ref<T[]>;
   getRowId?: (row: T) => string;
 }
 
-export interface RowSelectionHelpers<T> {
+export interface RowSelectionHelpers<T extends RowData> {
   rowSelection: Ref<RowSelectionState>;
   selectedRowIds: Ref<string[]>;
   selectedRowData: Ref<T[]>;
@@ -17,7 +18,9 @@ export interface RowSelectionHelpers<T> {
   toggleRowSelection: (id: string) => void;
   selectRows: (ids: string[]) => void;
   deselectRows: (ids: string[]) => void;
-  getSelectionColumn: (options?: SelectionColumnOptions) => ColumnDef<T>;
+  getSelectionColumn: (
+    options?: SelectionColumnOptions,
+  ) => ColumnDef<DataTableFeatures, T>;
 }
 
 export interface SelectionColumnOptions {
@@ -27,7 +30,7 @@ export interface SelectionColumnOptions {
   size?: number;
 }
 
-export function useRowSelection<T>(
+export function useRowSelection<T extends RowData>(
   options: UseRowSelectionOptions<T>,
 ): RowSelectionHelpers<T> {
   const { data, getRowId = (row: any) => row.id } = options;
@@ -112,7 +115,7 @@ export function useRowSelection<T>(
 
   const getSelectionColumn = (
     columnOptions: SelectionColumnOptions = {},
-  ): ColumnDef<T> => {
+  ): ColumnDef<DataTableFeatures, T> => {
     const {
       headerClass = "flex items-center justify-center",
       cellClass = "flex items-center justify-center",
@@ -150,7 +153,7 @@ export function useRowSelection<T>(
       },
       enableSorting: false,
       size,
-    } as ColumnDef<T>;
+    } as ColumnDef<DataTableFeatures, T>;
   };
 
   return {

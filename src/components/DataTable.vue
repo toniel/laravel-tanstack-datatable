@@ -2,18 +2,18 @@
 import type { LaravelPaginationResponse } from "@toniel/laravel-tanstack-pagination";
 import {
   FlexRender,
-  getCoreRowModel,
-  useVueTable,
+  useTable,
   type ColumnDef,
   type RowSelectionState,
 } from "@tanstack/vue-table";
 import { ChevronDown, ChevronUp, ChevronsUpDown, CircleX, Inbox, RefreshCw } from "lucide-vue-next";
 import { computed } from "vue";
+import { dataTableFeatures, type DataTableFeatures } from "../lib/features";
 import DataTablePagination from "./DataTablePagination.vue";
 
 interface Props {
   data?: any[];
-  columns: ColumnDef<any>[];
+  columns: ColumnDef<DataTableFeatures, any>[];
   pagination?: LaravelPaginationResponse | null;
   isLoading?: boolean;
   error?: Error | null;
@@ -99,23 +99,19 @@ const selectedRowData = computed(() => {
 });
 
 // Table configuration
-const table = useVueTable({
-  get data() {
-    return props.data || [];
-  },
-  get columns() {
-    return props.columns;
-  },
-  getCoreRowModel: getCoreRowModel(),
+const table = useTable({
+  features: dataTableFeatures,
+  data: computed(() => props.data || []),
+  columns: computed(() => props.columns),
   enableSorting: true,
   manualSorting: true,
-  enableRowSelection: props.enableRowSelection,
-  getRowId: props.getRowId,
-  state: {
-    get rowSelection() {
-      return props.rowSelection || {};
-    },
-  },
+  // Reactive in v9: the adapter watches these computed values, so toggling
+  // them at runtime now updates the table instance.
+  enableRowSelection: computed(() => props.enableRowSelection),
+  getRowId: (row: any) => String(props.getRowId(row)),
+  state: computed(() => ({
+    rowSelection: props.rowSelection || {},
+  })),
   onRowSelectionChange: (updater) => {
     const newSelection =
       typeof updater === "function"
@@ -312,10 +308,7 @@ defineExpose({
                       : undefined
                   "
                 >
-                  <FlexRender
-                    :render="header.column.columnDef.header"
-                    :props="header.getContext()"
-                  />
+                  <FlexRender :header="header" />
                   <div v-if="header.column.getCanSort()">
                     <ChevronsUpDown
                       v-if="sortBy !== header.column.id"
@@ -356,10 +349,7 @@ defineExpose({
                   :key="cell.id"
                   class="p-4 align-middle [&:has([role=checkbox])]:pr-0"
                 >
-                  <FlexRender
-                    :render="cell.column.columnDef.cell"
-                    :props="cell.getContext()"
-                  />
+                  <FlexRender :cell="cell" />
                 </td>
               </tr>
             </template>

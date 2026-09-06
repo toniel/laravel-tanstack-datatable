@@ -5,6 +5,49 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.2.0] - 2026-09-06
+
+### Changed
+
+- **BREAKING**: Upgraded to TanStack Table v9 (`@tanstack/vue-table@^9.0.0`).
+  The v8 peer range is no longer supported; stay on `0.1.x` if you need v8.
+- **BREAKING**: Column definitions now take the feature set as their first
+  generic — `createColumnHelper<DataTableFeatures, User>()` and
+  `ColumnDef<DataTableFeatures, User>`. Export `DataTableFeatures` is provided
+  for this. See "Migrating to TanStack Table v9" in the README.
+- **BREAKING**: `useRowSelection<T>` now constrains `T` to v9's `RowData`
+  (`Record<string, any> | Array<any>`). Primitive row types no longer compile.
+
+### Added
+
+- `dataTableFeatures` / `DataTableFeatures` exports — the explicit v9 feature
+  set (`rowSelectionFeature`, `rowSortingFeature`, `columnVisibilityFeature`)
+  backing `DataTable`.
+
+### Fixed
+
+- `enableRowSelection` and `getRowId` are now reactive. Under v8 they were read
+  once at setup, so changing them at runtime silently did nothing.
+
+### Internal
+
+- `useVueTable` → `useTable`; `getCoreRowModel()` removed (automatic in v9).
+- `FlexRender` migrated to the v9 shorthand (`:header` / `:cell`).
+
+## [0.1.11] - 2026-05-30
+
+### Fixed
+
+- Repaired the CommonJS entry point. With `"type": "module"` set, Node parsed
+  `dist/index.js` as ESM, so `require()` returned an empty object and every
+  named export was `undefined`. The CJS bundle is now emitted as
+  `dist/index.cjs`.
+
+### Removed
+
+- Dropped `radix-vue`, `class-variance-authority`, and `@tanstack/vue-query`
+  from `peerDependencies`; none were imported by this package.
+
 ## [0.1.10] - 2026-05-14
 
 ### Added

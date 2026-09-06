@@ -1,6 +1,6 @@
 {
   "name": "@toniel/laravel-tanstack-datatable",
-  "version": "0.1.11",
+  "version": "0.2.0",
   "description": "Vue 3 DataTable components for Laravel pagination with TanStack Query and shadcn-vue",
   "type": "module",
   "main": "./dist/index.cjs",
@@ -49,14 +49,14 @@
   },
   "peerDependencies": {
     "vue": "^3.0.0",
-    "@tanstack/vue-table": "^8.0.0",
+    "@tanstack/vue-table": "^9.0.0",
     "@toniel/laravel-tanstack-pagination": "^0.1.0",
     "clsx": "^2.0.0",
     "tailwind-merge": "^2.0.0",
     "lucide-vue-next": "^0.460.0"
   },
   "devDependencies": {
-    "@tanstack/vue-table": "^8.20.5",
+    "@tanstack/vue-table": "^9.2.4",
     "@types/node": "^22.0.0",
     "@vitejs/plugin-vue": "^5.0.0",
     "clsx": "^2.1.1",

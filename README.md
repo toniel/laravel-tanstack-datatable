@@ -29,6 +29,10 @@ This package requires the following peer dependencies:
 npm install vue @tanstack/vue-query @tanstack/vue-table
 ```
 
+> **Requires TanStack Table v9.** This package uses the v9 `useTable` API. If you
+> are still on `@tanstack/vue-table` v8, stay on `@toniel/laravel-tanstack-datatable@0.1.x`.
+> See [Migrating to v9](#migrating-to-tanstack-table-v9) below.
+
 ## Quick Start
 
 ### Basic Usage
@@ -36,7 +40,7 @@ npm install vue @tanstack/vue-query @tanstack/vue-table
 ```vue
 <script setup lang="ts">
 import { usePagination } from '@toniel/laravel-tanstack-pagination'
-import { DataTable } from '@toniel/laravel-tanstack-datatable'
+import { DataTable, type DataTableFeatures } from '@toniel/laravel-tanstack-datatable'
 import { createColumnHelper } from '@tanstack/vue-table'
 import axios from 'axios'
 
@@ -47,8 +51,8 @@ interface User {
   email: string
 }
 
-// Create columns
-const columnHelper = createColumnHelper<User>()
+// Create columns — v9 takes the feature set as the first generic
+const columnHelper = createColumnHelper<DataTableFeatures, User>()
 
 const columns = [
   columnHelper.accessor('id', {
@@ -125,7 +129,7 @@ const {
 | Prop | Type | Default | Description |
 |------|------|---------|-------------|
 | `data` | `Array` | `[]` | Table data array |
-| `columns` | `ColumnDef[]` | required | TanStack Table column definitions |
+| `columns` | `ColumnDef<DataTableFeatures, T>[]` | required | TanStack Table v9 column definitions |
 | `pagination` | `LaravelPaginationResponse` | `null` | Laravel pagination response |
 | `isLoading` | `boolean` | `false` | Loading state |
 | `error` | `Error` | `null` | Error object |
@@ -489,7 +493,7 @@ For more control over row selection, use the `useRowSelection` composable:
 ```vue
 <script setup lang="ts">
 import { ref } from 'vue'
-import { useRowSelection } from '@toniel/laravel-tanstack-datatable'
+import { useRowSelection, type DataTableFeatures } from '@toniel/laravel-tanstack-datatable'
 import { createColumnHelper } from '@tanstack/vue-table'
 
 interface User {
@@ -514,7 +518,7 @@ const {
   getRowId: (row) => String(row.id),
 })
 
-const columnHelper = createColumnHelper<User>()
+const columnHelper = createColumnHelper<DataTableFeatures, User>()
 
 const columns = [
   getSelectionColumn({ size: 50 }), // Automatic checkbox column
@@ -562,7 +566,7 @@ const handleBulkDelete = async () => {
 | `toggleRowSelection` | `(id: string) => void` | Toggle single row selection |
 | `selectRows` | `(ids: string[]) => void` | Select multiple rows by IDs |
 | `deselectRows` | `(ids: string[]) => void` | Deselect multiple rows by IDs |
-| `getSelectionColumn` | `(options?) => ColumnDef<T>` | Get a checkbox column definition |
+| `getSelectionColumn` | `(options?) => ColumnDef<DataTableFeatures, T>` | Get a checkbox column definition |
 
 #### `getSelectionColumn` Options
 
@@ -663,6 +667,56 @@ module.exports = {
   --color-border: ...;
 }
 ```
+
+## Migrating to TanStack Table v9
+
+Version `0.2.0` of this package moves from TanStack Table v8 to v9. The
+component internals are handled for you — the changes below are what you need
+to make in **your own** column definitions.
+
+### 1. Column generics take the feature set first
+
+v9 gates its APIs behind explicitly registered features, so column types now
+carry a `TFeatures` generic. This package exports its feature set as
+`DataTableFeatures`:
+
+```diff
+- import { createColumnHelper } from '@tanstack/vue-table'
++ import { createColumnHelper } from '@tanstack/vue-table'
++ import type { DataTableFeatures } from '@toniel/laravel-tanstack-datatable'
+
+- const columnHelper = createColumnHelper<User>()
++ const columnHelper = createColumnHelper<DataTableFeatures, User>()
+```
+
+The same applies to bare `ColumnDef` annotations:
+
+```diff
+- const columns: ColumnDef<User>[] = [...]
++ const columns: ColumnDef<DataTableFeatures, User>[] = [...]
+```
+
+### 2. Row types must be objects or arrays
+
+v9 restricts `RowData` to `Record<string, any> | Array<any>`. `useRowSelection<T>`
+now carries that constraint, so a primitive row type will no longer compile.
+Use an explicit object type for your rows.
+
+### 3. Upgrade the peer dependency
+
+```bash
+npm install @tanstack/vue-table@^9
+```
+
+If you cannot upgrade yet, pin `@toniel/laravel-tanstack-datatable@0.1.x`,
+which stays on v8.
+
+### What did not change
+
+The `DataTable` props, events, and slots are unchanged, as are all
+`useRowSelection` helpers. If you only ever passed columns built from
+`createColumnHelper` and did not call TanStack APIs directly, adding the
+generic is the whole migration.
 
 ## Related Packages
 
