@@ -27,7 +27,12 @@ interface Props {
   // Row Selection Props
   rowSelection?: RowSelectionState;
   enableRowSelection?: boolean;
-  getRowId?: (row: any) => string;
+  /**
+   * Row identity. Numbers are accepted because the default returns `row.id`,
+   * which is numeric for most Laravel models; every id is stringified before
+   * it reaches the table or the selection map.
+   */
+  getRowId?: (row: any) => string | number;
   showSelectionInfo?: boolean;
 
   // UI Options
@@ -43,11 +48,18 @@ interface Props {
   loadingText?: string;
   errorTitle?: string;
   emptyStateText?: string;
+  searchPlaceholder?: string;
+  /** Accessible name for the search input, announced by screen readers. */
+  searchLabel?: string;
 }
 
 const emit = defineEmits<{
   pageChange: [page: number];
   perPageChange: [perPage: number];
+  /**
+   * Fired on every keystroke — this component does not debounce. Debounce in
+   * the parent before issuing a request.
+   */
   searchChange: [search: string];
   sortChange: [column: string];
   filterChange: [filters: Record<string, any>];
@@ -72,31 +84,40 @@ const props = withDefaults(defineProps<Props>(), {
   showSelectionInfo: true,
   showSearch: true,
   showPerPageSelector: true,
-  rowClassName: "" as any,
+  rowClassName: "",
   title: "Items",
   itemName: "items",
   loadingText: "Loading...",
   errorTitle: "Error loading data",
   emptyStateText: "No items found",
+  searchPlaceholder: "Search...",
+  searchLabel: "Search",
 });
 
-// Computed properties for selection info
-const selectedRowCount = computed(() => {
-  return Object.keys(props.rowSelection || {}).filter(
-    (key) => props.rowSelection?.[key],
-  ).length;
-});
+// Selection info.
+//
+// NOTE ON SCOPE: ids and count span *every* page, because rowSelection is the
+// full selection map owned by the parent. Row data can only ever cover the
+// current page — this component never sees rows it has not been handed. Acting
+// on `currentPageSelectedData` when rows are selected across several pages
+// therefore silently misses the off-page ones, which is why it is named for its
+// scope. Use the ids to fetch or mutate the full set.
+const selectedRowIds = computed(() => Object.keys(props.rowSelection || {}));
 
-const selectedRowIds = computed(() => {
-  return Object.keys(props.rowSelection || {}).filter(
-    (key) => props.rowSelection?.[key],
+const selectedRowCount = computed(() => selectedRowIds.value.length);
+
+const currentPageSelectedData = computed(() => {
+  if (!props.data || !props.rowSelection) return [];
+  return props.data.filter(
+    (row) => props.rowSelection[String(props.getRowId(row))],
   );
 });
 
-const selectedRowData = computed(() => {
-  if (!props.data || !props.rowSelection) return [];
-  return props.data.filter((row) => props.rowSelection[props.getRowId(row)]);
-});
+// True when the selection extends beyond the rows currently loaded, i.e. when
+// currentPageSelectedData is an incomplete view of the selection.
+const hasOffPageSelection = computed(
+  () => selectedRowCount.value > currentPageSelectedData.value.length,
+);
 
 // Table configuration
 const table = useTable({
@@ -123,9 +144,20 @@ const table = useTable({
   enableSubRowSelection: false,
 });
 
-// Helper functions
-const getSelectedRowIds = () => selectedRowIds.value;
-const getSelectedRowData = () => selectedRowData.value;
+// Number of columns actually rendered in a row. Uses the visible flat columns
+// rather than props.columns.length, which counts top-level defs and so is wrong
+// for grouped headers or hidden columns.
+const visibleColumnCount = computed(
+  () => table.getVisibleFlatColumns().length || props.columns.length,
+);
+
+// aria-sort belongs on the <th>, and only on the column actually sorted.
+const ariaSortFor = (columnId: string, canSort: boolean) => {
+  if (!canSort) return undefined;
+  if (props.sortBy !== columnId) return "none";
+  return props.sortDirection === "asc" ? "ascending" : "descending";
+};
+
 const clearSelection = () => emit("update:rowSelection", {});
 
 const selectAllCurrentPage = () => {
@@ -145,14 +177,13 @@ const deselectAllCurrentPage = () => {
 };
 
 defineExpose({
-  getSelectedRowIds,
-  getSelectedRowData,
   clearSelection,
   selectAllCurrentPage,
   deselectAllCurrentPage,
   selectedRowCount,
   selectedRowIds,
-  selectedRowData,
+  currentPageSelectedData,
+  hasOffPageSelection,
   table,
 });
 </script>
@@ -170,7 +201,8 @@ defineExpose({
           <input
             :value="search"
             type="search"
-            placeholder="Search..."
+            :aria-label="searchLabel"
+            :placeholder="searchPlaceholder"
             class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
             @input="
               emit('searchChange', ($event.target as HTMLInputElement).value)
@@ -195,7 +227,8 @@ defineExpose({
       <slot
         name="selection-info"
         :selected-ids="selectedRowIds"
-        :selected-data="selectedRowData"
+        :current-page-selected-data="currentPageSelectedData"
+        :has-off-page-selection="hasOffPageSelection"
         :selected-count="selectedRowCount"
         :clear-selection="clearSelection"
         :select-all-current-page="selectAllCurrentPage"
@@ -219,7 +252,8 @@ defineExpose({
             <slot
               name="bulk-actions"
               :selected-ids="selectedRowIds"
-              :selected-data="selectedRowData"
+              :current-page-selected-data="currentPageSelectedData"
+              :has-off-page-selection="hasOffPageSelection"
               :selected-count="selectedRowCount"
               :clear-selection="clearSelection"
               :select-all-current-page="selectAllCurrentPage"
@@ -239,9 +273,15 @@ defineExpose({
     </template>
 
     <!-- Loading State -->
-    <div v-if="isLoading && data.length === 0" class="flex items-center justify-center p-8">
+    <div
+      v-if="isLoading && data.length === 0"
+      class="flex items-center justify-center p-8"
+      role="status"
+      aria-live="polite"
+    >
       <div
         class="w-8 h-8 mr-3 border-b-2 border-gray-900 dark:border-gray-100 rounded-full animate-spin"
+        aria-hidden="true"
       />
       <div class="text-lg text-gray-700 dark:text-gray-200">
         {{ loadingText }}
@@ -249,7 +289,11 @@ defineExpose({
     </div>
 
     <!-- Error State -->
-    <div v-else-if="error" class="flex flex-col items-center p-8">
+    <div
+      v-else-if="error"
+      class="flex flex-col items-center p-8"
+      role="alert"
+    >
       <div class="flex items-center gap-2 mb-2 text-lg text-red-600 dark:text-red-400">
         <CircleX class="size-6" />
         <span>{{ errorTitle }}</span>
@@ -267,16 +311,27 @@ defineExpose({
     </div>
 
     <!-- Table Content -->
-    <div v-else class="rounded-lg border bg-background dark:border-gray-700">
-      <!-- Loading overlay for page changes -->
-      <div v-if="isLoading" class="relative">
+    <div
+      v-else
+      class="relative rounded-lg border bg-background dark:border-gray-700"
+    >
+      <!--
+        Loading overlay for page changes. `relative` lives on the container
+        above so inset-0 resolves against the full table box; on its own
+        wrapper the box collapsed to zero height and the backdrop covered
+        nothing.
+      -->
+      <div
+        v-if="isLoading"
+        class="absolute inset-0 z-10 flex items-center justify-center rounded-lg bg-white/70 dark:bg-gray-900/70"
+        role="status"
+        aria-live="polite"
+      >
         <div
-          class="absolute inset-0 z-10 flex items-center justify-center bg-white/70 dark:bg-gray-900/70 rounded-lg"
-        >
-          <div
-            class="w-6 h-6 border-b-2 border-gray-900 dark:border-gray-100 rounded-full animate-spin"
-          />
-        </div>
+          class="w-6 h-6 border-b-2 border-gray-900 dark:border-gray-100 rounded-full animate-spin"
+          aria-hidden="true"
+        />
+        <span class="sr-only">{{ loadingText }}</span>
       </div>
 
       <div class="relative w-full overflow-auto">
@@ -292,40 +347,46 @@ defineExpose({
                 v-for="header in headerGroup.headers"
                 :key="header.id"
                 :colspan="header.colSpan"
+                :aria-sort="ariaSortFor(header.column.id, header.column.getCanSort())"
                 class="h-12 px-4 text-left align-middle font-bold text-muted-foreground [&:has([role=checkbox])]:pr-0"
               >
-                <div
-                  v-if="!header.isPlaceholder"
-                  :class="[
-                    'flex items-center gap-2',
-                    header.column.getCanSort()
-                      ? 'cursor-pointer select-none hover:bg-accent p-2 rounded transition-colors'
-                      : '',
-                  ]"
-                  @click="
-                    header.column.getCanSort()
-                      ? emit('sortChange', header.column.id)
-                      : undefined
-                  "
+                <!--
+                  Sortable headers are real <button>s so they are focusable and
+                  respond to Enter/Space; non-sortable ones stay plain divs so
+                  they are not announced as controls.
+                -->
+                <button
+                  v-if="!header.isPlaceholder && header.column.getCanSort()"
+                  type="button"
+                  class="flex items-center gap-2 cursor-pointer select-none hover:bg-accent p-2 rounded transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                  @click="emit('sortChange', header.column.id)"
                 >
                   <FlexRender :header="header" />
-                  <div v-if="header.column.getCanSort()">
-                    <ChevronsUpDown
-                      v-if="sortBy !== header.column.id"
-                      :size="10"
-                      class="text-gray-400"
-                    />
-                    <ChevronUp
-                      v-else-if="sortBy === header.column.id && sortDirection === 'asc'"
-                      :size="10"
-                      class="text-gray-900 dark:text-gray-100"
-                    />
-                    <ChevronDown
-                      v-else-if="sortBy === header.column.id && sortDirection === 'desc'"
-                      :size="10"
-                      class="text-gray-900 dark:text-gray-100"
-                    />
-                  </div>
+                  <ChevronsUpDown
+                    v-if="sortBy !== header.column.id"
+                    :size="10"
+                    class="text-gray-400"
+                    aria-hidden="true"
+                  />
+                  <ChevronUp
+                    v-else-if="sortDirection === 'asc'"
+                    :size="10"
+                    class="text-gray-900 dark:text-gray-100"
+                    aria-hidden="true"
+                  />
+                  <ChevronDown
+                    v-else
+                    :size="10"
+                    class="text-gray-900 dark:text-gray-100"
+                    aria-hidden="true"
+                  />
+                </button>
+
+                <div
+                  v-else-if="!header.isPlaceholder"
+                  class="flex items-center gap-2"
+                >
+                  <FlexRender :header="header" />
                 </div>
               </th>
             </tr>
@@ -357,7 +418,10 @@ defineExpose({
             <!-- Empty State -->
             <template v-else>
               <tr>
-                <td :colspan="columns.length" class="h-24 text-center dark:text-gray-400">
+                <td
+                  :colspan="visibleColumnCount"
+                  class="h-24 text-center dark:text-gray-400"
+                >
                   <div class="flex flex-col items-center gap-2">
                     <Inbox class="size-8 text-muted-foreground" />
                     <span>{{ emptyStateText }}</span>
@@ -368,7 +432,7 @@ defineExpose({
           </tbody>
           <tfoot v-if="pagination && pagination.meta.last_page > 1" class="border-t">
             <tr>
-              <td :colspan="columns.length" class="p-0">
+              <td :colspan="visibleColumnCount" class="p-0">
                 <!-- Pagination Component -->
                 <DataTablePagination
                   :pagination="pagination"

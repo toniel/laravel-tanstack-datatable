@@ -17,22 +17,72 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   for this. See "Migrating to TanStack Table v9" in the README.
 - **BREAKING**: `useRowSelection<T>` now constrains `T` to v9's `RowData`
   (`Record<string, any> | Array<any>`). Primitive row types no longer compile.
+- **BREAKING**: The `selection-info` and `bulk-actions` slots renamed
+  `selectedData` to `currentPageSelectedData`. The old name implied it held
+  every selected row; with server-side pagination it can only ever hold rows
+  from the loaded page. A `hasOffPageSelection` slot prop is now provided to
+  detect the difference. Drive bulk actions from `selectedIds`.
+- **BREAKING**: Removed the `./style.css` subpath export. It pointed at a file
+  the build never produced, so `import '@toniel/laravel-tanstack-datatable/style.css'`
+  always failed. This package ships no stylesheet — see the Tailwind setup
+  section in the README.
+- `getRowId` is now typed `(row) => string | number`, matching its own default
+  of `(row) => row.id`, which returns a number for most Laravel models. Ids
+  were already stringified internally.
 
 ### Added
 
 - `dataTableFeatures` / `DataTableFeatures` exports — the explicit v9 feature
   set (`rowSelectionFeature`, `rowSortingFeature`, `columnVisibilityFeature`)
   backing `DataTable`.
+- `searchPlaceholder` and `searchLabel` props for customising the search input
+  and its accessible name.
+- `"sideEffects": false`, letting bundlers tree-shake unused exports.
+- `./package.json` subpath export, which some tooling reads.
 
 ### Fixed
 
 - `enableRowSelection` and `getRowId` are now reactive. Under v8 they were read
   once at setup, so changing them at runtime silently did nothing.
+- The page-change loading overlay covered nothing. `relative` sat on a wrapper
+  that collapsed to zero height, so the `inset-0` backdrop had no box to fill;
+  it now anchors to the bordered table container.
+- Empty-state and footer `colspan` used `columns.length`, which counts
+  top-level column defs and so was wrong with grouped headers or hidden
+  columns. Both now use the visible flat column count.
+
+### Accessibility
+
+- Sortable headers are real `<button>`s — previously `<div @click>`, so they
+  could not be reached by keyboard or activated with Enter/Space.
+- `aria-sort` on sortable `<th>`s; sort direction was conveyed by icon alone.
+- `aria-current="page"` on the active pagination button; the current page was
+  conveyed by colour alone.
+- The per-page `<select>` is now bound to a real `<label for>` (previously an
+  adjacent `<p>`, which screen readers do not associate).
+- Selection checkboxes have accessible names; they were announced as bare
+  "checkbox" with no indication of what they selected.
+- Loading states are `role="status"` / `aria-live="polite"` and the error state
+  is `role="alert"`, so both are announced rather than silently swapped in.
+- Decorative icons and the pagination ellipsis are `aria-hidden`.
+
+### Documentation
+
+- Documented the **required** Tailwind `content` glob for the package's `dist`.
+  Without it every utility class is purged and the table renders unstyled.
+- Documented the shadcn-vue CSS variables the components depend on.
+- Documented that `searchChange` fires on every keystroke and is not debounced.
+- Removed the `showCaption` prop from the props table; it was never implemented.
 
 ### Internal
 
 - `useVueTable` → `useTable`; `getCoreRowModel()` removed (automatic in v9).
 - `FlexRender` migrated to the v9 shorthand (`:header` / `:cell`).
+- Dropped the duplicated `getSelectedRowIds` / `getSelectedRowData` expose
+  getters; the exposed `selectedRowIds` / `currentPageSelectedData` computeds
+  already carried the same values.
+- `package-lock.json` / `yarn.lock` / `pnpm-lock.yaml` are gitignored;
+  `bun.lock` is the lockfile of record.
 
 ## [0.1.11] - 2026-05-30
 
@@ -190,8 +240,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Slot documentation
 - Dark mode setup guide
 
-[Unreleased]: https://github.com/toniel/laravel-tanstack-datatable/compare/v0.1.10...HEAD
+[Unreleased]: https://github.com/toniel/laravel-tanstack-datatable/compare/v0.2.0...HEAD
+[0.2.0]: https://github.com/toniel/laravel-tanstack-datatable/compare/v0.1.11...v0.2.0
+[0.1.11]: https://github.com/toniel/laravel-tanstack-datatable/compare/v0.1.10...v0.1.11
 [0.1.10]: https://github.com/toniel/laravel-tanstack-datatable/compare/v0.1.9...v0.1.10
+[0.1.8]: https://github.com/toniel/laravel-tanstack-datatable/compare/v0.1.7...v0.1.8
 [0.1.9]: https://github.com/toniel/laravel-tanstack-datatable/compare/v0.1.8...v0.1.9
 [0.1.7]: https://github.com/toniel/laravel-tanstack-datatable/compare/v0.1.6...v0.1.7
 [0.1.6]: https://github.com/toniel/laravel-tanstack-datatable/compare/v0.1.5...v0.1.6

@@ -2,6 +2,7 @@
 import type { LaravelPaginationResponse } from "@toniel/laravel-tanstack-pagination";
 import { ChevronLeft, ChevronRight } from "lucide-vue-next";
 import { computed } from "vue";
+import { useElementId } from "../lib/id";
 
 interface Props {
   pagination?: LaravelPaginationResponse | null;
@@ -23,6 +24,9 @@ const props = withDefaults(defineProps<Props>(), {
 });
 
 const emit = defineEmits<Emits>();
+
+// Unique id so <label for> binds to this table's own select.
+const perPageId = useElementId("per-page");
 
 const canGoPrevious = computed(() =>
   props.pagination ? props.pagination.meta.current_page > 1 : false,
@@ -107,8 +111,11 @@ const goToNextPage = () => {
       </div>
 
       <div v-if="showPerPageSelector" class="flex items-center gap-2">
-        <p class="text-sm text-muted-foreground">Rows per page:</p>
+        <label :for="perPageId" class="text-sm text-muted-foreground">
+          Rows per page:
+        </label>
         <select
+          :id="perPageId"
           :value="currentPerPage"
           class="rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-2 py-1 text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary"
           @change="
@@ -134,6 +141,7 @@ const goToNextPage = () => {
           aria-label="Pagination"
         >
           <button
+            type="button"
             :disabled="!canGoPrevious"
             class="relative inline-flex items-center rounded-l-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-2 py-2 text-sm font-medium text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:cursor-not-allowed disabled:opacity-50"
             @click="goToPreviousPage"
@@ -145,6 +153,11 @@ const goToNextPage = () => {
           <template v-for="(page, index) in visiblePages" :key="index">
             <button
               v-if="page !== '...'"
+              type="button"
+              :aria-current="
+                page === pagination.meta.current_page ? 'page' : undefined
+              "
+              :aria-label="`Go to page ${page}`"
               :class="[
                 'relative inline-flex items-center border px-4 py-2 text-sm font-medium',
                 page === pagination.meta.current_page
@@ -157,6 +170,7 @@ const goToNextPage = () => {
             </button>
             <span
               v-else
+              aria-hidden="true"
               class="relative inline-flex items-center border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-400"
             >
               ...
@@ -164,6 +178,7 @@ const goToNextPage = () => {
           </template>
 
           <button
+            type="button"
             :disabled="!canGoNext"
             class="relative inline-flex items-center rounded-r-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-2 py-2 text-sm font-medium text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:cursor-not-allowed disabled:opacity-50"
             @click="goToNextPage"

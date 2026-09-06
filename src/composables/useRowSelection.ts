@@ -4,7 +4,12 @@ import type { DataTableFeatures } from "../lib/features";
 
 export interface UseRowSelectionOptions<T extends RowData> {
   data: Ref<T[]>;
-  getRowId?: (row: T) => string;
+  /**
+   * Row identity. Numbers are accepted because the default returns `row.id`,
+   * which is numeric for most Laravel models; every id is stringified before
+   * it is used as a selection key.
+   */
+  getRowId?: (row: T) => string | number;
 }
 
 export interface RowSelectionHelpers<T extends RowData> {
@@ -131,6 +136,7 @@ export function useRowSelection<T extends RowData>(
           h("input", {
             type: "checkbox",
             class: checkboxClass,
+            "aria-label": "Select all rows on this page",
             checked: isAllCurrentPageSelected.value,
             indeterminate,
             ref: (el: any) => {
@@ -146,6 +152,7 @@ export function useRowSelection<T extends RowData>(
           h("input", {
             type: "checkbox",
             class: checkboxClass,
+            "aria-label": `Select row ${id}`,
             checked: Boolean(rowSelection.value[id]),
             onChange: () => toggleRowSelection(id),
           }),
