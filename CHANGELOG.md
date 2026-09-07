@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.2.0] - 2026-09-06
+## [0.2.0] - 2026-09-07
 
 ### Changed
 
@@ -42,6 +42,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- Repaired the CommonJS entry point, broken in every release up to and
+  including `0.1.11`. With `"type": "module"` set, Node parsed `dist/index.js`
+  as ESM, so the bundle's `exports.*` assignments went nowhere: `require()`
+  returned an empty object and every named export was `undefined`, with no
+  error raised. The CJS bundle is now emitted as `dist/index.cjs`.
 - `enableRowSelection` and `getRowId` are now reactive. Under v8 they were read
   once at setup, so changing them at runtime silently did nothing.
 - The page-change loading overlay covered nothing. `relative` sat on a wrapper
@@ -84,19 +89,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `package-lock.json` / `yarn.lock` / `pnpm-lock.yaml` are gitignored;
   `bun.lock` is the lockfile of record.
 
-## [0.1.11] - 2026-05-30
-
-### Fixed
-
-- Repaired the CommonJS entry point. With `"type": "module"` set, Node parsed
-  `dist/index.js` as ESM, so `require()` returned an empty object and every
-  named export was `undefined`. The CJS bundle is now emitted as
-  `dist/index.cjs`.
-
 ### Removed
 
 - Dropped `radix-vue`, `class-variance-authority`, and `@tanstack/vue-query`
   from `peerDependencies`; none were imported by this package.
+
+## [0.1.11] - 2026-05-30
+
+### Fixed
+
+- Memory leak, reactivity bugs, and dark mode consistency.
 
 ## [0.1.10] - 2026-05-14
 
@@ -243,6 +245,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [Unreleased]: https://github.com/toniel/laravel-tanstack-datatable/compare/v0.2.0...HEAD
 [0.2.0]: https://github.com/toniel/laravel-tanstack-datatable/compare/v0.1.11...v0.2.0
 [0.1.11]: https://github.com/toniel/laravel-tanstack-datatable/compare/v0.1.10...v0.1.11
+[0.1.9]: https://github.com/toniel/laravel-tanstack-datatable/compare/v0.1.8...v0.1.9
 [0.1.10]: https://github.com/toniel/laravel-tanstack-datatable/compare/v0.1.9...v0.1.10
 [0.1.8]: https://github.com/toniel/laravel-tanstack-datatable/compare/v0.1.7...v0.1.8
 [0.1.9]: https://github.com/toniel/laravel-tanstack-datatable/compare/v0.1.8...v0.1.9
