@@ -38,11 +38,14 @@
     "tailwindcss",
     "ui-components"
   ],
-  "author": "Toniel <toniel@example.com>",
+  "author": "Toni Listiyo <l.toni2007@gmail.com>",
   "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
   "repository": {
     "type": "git",
-    "url": "https://github.com/toniel/laravel-tanstack-datatable.git"
+    "url": "git+https://github.com/toniel/laravel-tanstack-datatable.git"
   },
   "homepage": "https://github.com/toniel/laravel-tanstack-datatable#readme",
   "bugs": {
