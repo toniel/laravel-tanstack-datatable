@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { LaravelPaginationResponse } from "@toniel/laravel-tanstack-pagination";
-import { ChevronLeft, ChevronRight } from "lucide-vue-next";
+import { ChevronLeft, ChevronRight } from "@lucide/vue";
 import { computed } from "vue";
 import { useElementId } from "../lib/id";
 

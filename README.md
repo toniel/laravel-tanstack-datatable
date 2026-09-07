@@ -27,8 +27,21 @@ This package requires the following peer dependencies:
 
 ```bash
 npm install vue @tanstack/vue-table @toniel/laravel-tanstack-pagination \
-  clsx tailwind-merge lucide-vue-next
+  clsx tailwind-merge @lucide/vue
 ```
+
+| Peer | Range |
+| --- | --- |
+| `vue` | `^3.0.0` |
+| `@tanstack/vue-table` | `^9.0.0` |
+| `@toniel/laravel-tanstack-pagination` | `^0.1.0` |
+| `clsx` | `^2.0.0` |
+| `tailwind-merge` | `^2.0.0 \|\| ^3.0.0` |
+| `@lucide/vue` | `^1.0.0` |
+
+> **Icons moved packages in 0.3.0.** `lucide-vue-next` is deprecated upstream in
+> favour of `@lucide/vue`. If you are upgrading from `0.2.x`, swap the package —
+> the icon names are unchanged. See [Migrating from lucide-vue-next](#migrating-from-lucide-vue-next).
 
 > **Requires TanStack Table v9.** This package uses the v9 `useTable` API. If you
 > are still on `@tanstack/vue-table` v8, stay on `@toniel/laravel-tanstack-datatable@0.1.x`.
@@ -778,6 +791,31 @@ The `DataTable` props, events, and slots are unchanged, as are all
 `useRowSelection` helpers. If you only ever passed columns built from
 `createColumnHelper` and did not call TanStack APIs directly, adding the
 generic is the whole migration.
+
+## Migrating from lucide-vue-next
+
+`0.3.0` moves the icon peer dependency from `lucide-vue-next` to `@lucide/vue`.
+Lucide deprecated `lucide-vue-next` upstream — its last release, `1.0.0`, carries
+an npm deprecation notice pointing at `@lucide/vue` — so the old package no
+longer receives new icons or fixes.
+
+```bash
+npm uninstall lucide-vue-next
+npm install @lucide/vue
+```
+
+If your own code imports icons, update the specifier. The exported icon names
+and their props are identical, so nothing else changes:
+
+```diff
+- import { ChevronDown } from 'lucide-vue-next'
++ import { ChevronDown } from '@lucide/vue'
+```
+
+`tailwind-merge` also widened to `^2.0.0 || ^3.0.0` in the same release, so the
+package no longer forces a downgrade on apps already on `tailwind-merge` v3.
+Install the major that matches your Tailwind CSS version: v2 for Tailwind CSS
+v3, v3 for Tailwind CSS v4.
 
 ## Related Packages
 

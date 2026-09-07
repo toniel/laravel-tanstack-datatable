@@ -6,7 +6,7 @@ import {
   type ColumnDef,
   type RowSelectionState,
 } from "@tanstack/vue-table";
-import { ChevronDown, ChevronUp, ChevronsUpDown, CircleX, Inbox, RefreshCw } from "lucide-vue-next";
+import { ChevronDown, ChevronUp, ChevronsUpDown, CircleX, Inbox, RefreshCw } from "@lucide/vue";
 import { computed } from "vue";
 import { dataTableFeatures, type DataTableFeatures } from "../lib/features";
 import DataTablePagination from "./DataTablePagination.vue";
