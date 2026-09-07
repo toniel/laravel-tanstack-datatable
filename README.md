@@ -26,8 +26,50 @@ bun add @toniel/laravel-tanstack-datatable @toniel/laravel-tanstack-pagination
 This package requires the following peer dependencies:
 
 ```bash
-npm install vue @tanstack/vue-query @tanstack/vue-table
+npm install vue @tanstack/vue-table @toniel/laravel-tanstack-pagination \
+  clsx tailwind-merge lucide-vue-next
 ```
+
+> **Requires TanStack Table v9.** This package uses the v9 `useTable` API. If you
+> are still on `@tanstack/vue-table` v8, stay on `@toniel/laravel-tanstack-datatable@0.1.x`.
+> See [Migrating to v9](#migrating-to-tanstack-table-v9) below.
+
+### Tailwind Setup (required)
+
+This package ships **no stylesheet** — there is no `style.css` to import. The
+components are styled with Tailwind utility classes that live inside the shipped
+JavaScript, so Tailwind in *your* app has to scan those files or every class is
+purged and the table renders unstyled.
+
+Add the package's `dist` to your `content` globs:
+
+```js
+// tailwind.config.js
+export default {
+  content: [
+    './resources/**/*.{vue,js,ts}',
+    './node_modules/@toniel/laravel-tanstack-datatable/dist/**/*.{js,mjs,cjs}',
+  ],
+  darkMode: 'class',
+  // ...
+}
+```
+
+Tailwind v4 users declare the same thing in CSS:
+
+```css
+@import 'tailwindcss';
+@source '../../node_modules/@toniel/laravel-tanstack-datatable/dist';
+```
+
+**shadcn-vue CSS variables are also required.** The components use semantic
+classes (`bg-background`, `text-muted-foreground`, `border-input`,
+`focus-visible:ring-ring`, `bg-accent`, `text-primary`) that resolve through the
+shadcn-vue theme variables. If your project was not set up with
+[shadcn-vue](https://www.shadcn-vue.com/docs/installation.html), define
+`--background`, `--foreground`, `--muted`, `--muted-foreground`, `--border`,
+`--input`, `--ring`, `--accent`, `--accent-foreground`, and `--primary` in your
+base layer — otherwise those elements fall back to transparent or inherit.
 
 ## Quick Start
 
@@ -36,7 +78,7 @@ npm install vue @tanstack/vue-query @tanstack/vue-table
 ```vue
 <script setup lang="ts">
 import { usePagination } from '@toniel/laravel-tanstack-pagination'
-import { DataTable } from '@toniel/laravel-tanstack-datatable'
+import { DataTable, type DataTableFeatures } from '@toniel/laravel-tanstack-datatable'
 import { createColumnHelper } from '@tanstack/vue-table'
 import axios from 'axios'
 
@@ -47,8 +89,8 @@ interface User {
   email: string
 }
 
-// Create columns
-const columnHelper = createColumnHelper<User>()
+// Create columns — v9 takes the feature set as the first generic
+const columnHelper = createColumnHelper<DataTableFeatures, User>()
 
 const columns = [
   columnHelper.accessor('id', {
@@ -125,7 +167,7 @@ const {
 | Prop | Type | Default | Description |
 |------|------|---------|-------------|
 | `data` | `Array` | `[]` | Table data array |
-| `columns` | `ColumnDef[]` | required | TanStack Table column definitions |
+| `columns` | `ColumnDef<DataTableFeatures, T>[]` | required | TanStack Table v9 column definitions |
 | `pagination` | `LaravelPaginationResponse` | `null` | Laravel pagination response |
 | `isLoading` | `boolean` | `false` | Loading state |
 | `error` | `Error` | `null` | Error object |
@@ -137,10 +179,9 @@ const {
 | `sortDirection` | `'asc'\|'desc'` | `'asc'` | Sort direction |
 | `enableRowSelection` | `boolean` | `false` | Enable row selection |
 | `rowSelection` | `RowSelectionState` | `{}` | Selected rows state |
-| `getRowId` | `Function` | `(row) => row.id` | Get unique row ID |
+| `getRowId` | `(row) => string \| number` | `(row) => row.id` | Get unique row ID (stringified internally) |
 | `showSelectionInfo` | `boolean` | `true` | Show selection info bar when rows are selected |
 | `showSearch` | `boolean` | `true` | Show search input |
-| `showCaption` | `boolean` | `true` | Show table caption |
 | `showPerPageSelector` | `boolean` | `true` | Show per page selector |
 | `rowClassName` | `string \| ((row: any) => string)` | `''` | Custom CSS class(es) for rows |
 | `title` | `string` | `'Items'` | Table title |
@@ -148,6 +189,8 @@ const {
 | `loadingText` | `string` | `'Loading...'` | Loading text |
 | `errorTitle` | `string` | `'Error loading data'` | Error title |
 | `emptyStateText` | `string` | `'No items found'` | Empty state text |
+| `searchPlaceholder` | `string` | `'Search...'` | Search input placeholder |
+| `searchLabel` | `string` | `'Search'` | Accessible name for the search input |
 
 #### DataTable Events
 
@@ -155,7 +198,7 @@ const {
 |-------|---------|-------------|
 | `pageChange` | `number` | Emitted when page changes |
 | `perPageChange` | `number` | Emitted when per page changes |
-| `searchChange` | `string` | Emitted when search input changes |
+| `searchChange` | `string` | Emitted on **every keystroke** — not debounced. Debounce in the parent before requesting. |
 | `sortChange` | `string` | Emitted when sort column changes |
 | `filterChange` | `Record<string, any>` | Emitted when filters change |
 | `retry` | - | Emitted when retry button clicked |
@@ -208,7 +251,7 @@ Add bulk action buttons when rows are selected:
   v-model:row-selection="selectedRows"
   ...
 >
-  <template #bulk-actions="{ selectedIds, selectedData, clearSelection }">
+  <template #bulk-actions="{ selectedIds, clearSelection }">
     <button @click="bulkDelete(selectedIds)" class="...">
       Delete Selected
     </button>
@@ -219,6 +262,8 @@ Add bulk action buttons when rows are selected:
 </DataTable>
 ```
 
+Receives the same slot props as [`selection-info`](#selection-info-slot).
+
 #### `selection-info` Slot
 Fully customize the selection info bar (replaces the default blue bar):
 
@@ -228,7 +273,7 @@ Fully customize the selection info bar (replaces the default blue bar):
   v-model:row-selection="selectedRows"
   ...
 >
-  <template #selection-info="{ selectedIds, selectedData, selectedCount, clearSelection }">
+  <template #selection-info="{ selectedIds, selectedCount, clearSelection }">
     <div class="your-custom-class">
       {{ selectedCount }} items selected
       <button @click="handleBulkAction(selectedIds)">Action</button>
@@ -239,12 +284,32 @@ Fully customize the selection info bar (replaces the default blue bar):
 ```
 
 Slot props available:
-- `selectedIds` - Array of selected row IDs
-- `selectedData` - Array of selected row data objects
-- `selectedCount` - Number of selected rows
-- `clearSelection` - Function to clear all selections
-- `selectAllCurrentPage` - Function to select all rows on current page
-- `deselectAllCurrentPage` - Function to deselect all rows on current page
+- `selectedIds` — IDs of **every** selected row, across all pages
+- `selectedCount` — number of selected rows, across all pages
+- `currentPageSelectedData` — row objects for the selected rows **on the current page only**
+- `hasOffPageSelection` — `true` when the selection extends beyond the loaded page, i.e. when `currentPageSelectedData` is an incomplete view
+- `clearSelection` — clear all selections
+- `selectAllCurrentPage` — select all rows on the current page
+- `deselectAllCurrentPage` — deselect all rows on the current page
+
+> **Selection spans pages, row data does not.** With server-side pagination the
+> component only ever receives the current page's rows, so it cannot hand you
+> objects for rows selected on other pages. Drive bulk actions from
+> `selectedIds` (send them to the server); reach for `currentPageSelectedData`
+> only when you specifically want the visible subset, and check
+> `hasOffPageSelection` if acting on a partial set would be wrong.
+
+```vue
+<template #bulk-actions="{ selectedIds, hasOffPageSelection }">
+  <span v-if="hasOffPageSelection" class="text-xs">
+    Includes rows on other pages
+  </span>
+  <!-- correct: the server resolves the ids -->
+  <button @click="axios.post('/users/bulk-delete', { ids: selectedIds })">
+    Delete Selected
+  </button>
+</template>
+```
 
 ## Custom Filters
 
@@ -489,7 +554,7 @@ For more control over row selection, use the `useRowSelection` composable:
 ```vue
 <script setup lang="ts">
 import { ref } from 'vue'
-import { useRowSelection } from '@toniel/laravel-tanstack-datatable'
+import { useRowSelection, type DataTableFeatures } from '@toniel/laravel-tanstack-datatable'
 import { createColumnHelper } from '@tanstack/vue-table'
 
 interface User {
@@ -514,7 +579,7 @@ const {
   getRowId: (row) => String(row.id),
 })
 
-const columnHelper = createColumnHelper<User>()
+const columnHelper = createColumnHelper<DataTableFeatures, User>()
 
 const columns = [
   getSelectionColumn({ size: 50 }), // Automatic checkbox column
@@ -562,7 +627,7 @@ const handleBulkDelete = async () => {
 | `toggleRowSelection` | `(id: string) => void` | Toggle single row selection |
 | `selectRows` | `(ids: string[]) => void` | Select multiple rows by IDs |
 | `deselectRows` | `(ids: string[]) => void` | Deselect multiple rows by IDs |
-| `getSelectionColumn` | `(options?) => ColumnDef<T>` | Get a checkbox column definition |
+| `getSelectionColumn` | `(options?) => ColumnDef<DataTableFeatures, T>` | Get a checkbox column definition |
 
 #### `getSelectionColumn` Options
 
@@ -663,6 +728,56 @@ module.exports = {
   --color-border: ...;
 }
 ```
+
+## Migrating to TanStack Table v9
+
+Version `0.2.0` of this package moves from TanStack Table v8 to v9. The
+component internals are handled for you — the changes below are what you need
+to make in **your own** column definitions.
+
+### 1. Column generics take the feature set first
+
+v9 gates its APIs behind explicitly registered features, so column types now
+carry a `TFeatures` generic. This package exports its feature set as
+`DataTableFeatures`:
+
+```diff
+- import { createColumnHelper } from '@tanstack/vue-table'
++ import { createColumnHelper } from '@tanstack/vue-table'
++ import type { DataTableFeatures } from '@toniel/laravel-tanstack-datatable'
+
+- const columnHelper = createColumnHelper<User>()
++ const columnHelper = createColumnHelper<DataTableFeatures, User>()
+```
+
+The same applies to bare `ColumnDef` annotations:
+
+```diff
+- const columns: ColumnDef<User>[] = [...]
++ const columns: ColumnDef<DataTableFeatures, User>[] = [...]
+```
+
+### 2. Row types must be objects or arrays
+
+v9 restricts `RowData` to `Record<string, any> | Array<any>`. `useRowSelection<T>`
+now carries that constraint, so a primitive row type will no longer compile.
+Use an explicit object type for your rows.
+
+### 3. Upgrade the peer dependency
+
+```bash
+npm install @tanstack/vue-table@^9
+```
+
+If you cannot upgrade yet, pin `@toniel/laravel-tanstack-datatable@0.1.x`,
+which stays on v8.
+
+### What did not change
+
+The `DataTable` props, events, and slots are unchanged, as are all
+`useRowSelection` helpers. If you only ever passed columns built from
+`createColumnHelper` and did not call TanStack APIs directly, adding the
+generic is the whole migration.
 
 ## Related Packages
 

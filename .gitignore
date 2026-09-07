@@ -1,5 +1,11 @@
 node_modules
 dist
+
+# bun.lock is the lockfile of record for this repo; keep other package
+# managers' lockfiles out so they cannot drift against it.
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
 .DS_Store
 *.log
 .env

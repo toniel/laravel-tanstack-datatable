@@ -17,16 +17,13 @@ export default defineConfig({
       entry: resolve(__dirname, 'src/index.ts'),
       name: 'LaravelTanstackDatatable',
       formats: ['es', 'cjs'],
-      fileName: (format) => `index.${format === 'es' ? 'mjs' : 'js'}`
+      fileName: (format) => `index.${format === 'es' ? 'mjs' : 'cjs'}`
     },
     rollupOptions: {
       external: [
         'vue',
-        '@tanstack/vue-query',
         '@tanstack/vue-table',
         '@toniel/laravel-tanstack-pagination',
-        'radix-vue',
-        'class-variance-authority',
         'clsx',
         'tailwind-merge',
         'lucide-vue-next'
@@ -34,7 +31,6 @@ export default defineConfig({
       output: {
         globals: {
           vue: 'Vue',
-          '@tanstack/vue-query': 'VueQuery',
           '@tanstack/vue-table': 'VueTable',
           '@toniel/laravel-tanstack-pagination': 'LaravelTanstackPagination'
         },
