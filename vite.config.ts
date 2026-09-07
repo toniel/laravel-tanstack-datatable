@@ -26,7 +26,7 @@ export default defineConfig({
         '@toniel/laravel-tanstack-pagination',
         'clsx',
         'tailwind-merge',
-        'lucide-vue-next'
+        '@lucide/vue'
       ],
       output: {
         globals: {

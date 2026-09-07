@@ -5,6 +5,23 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.0] - 2026-09-08
+
+### Changed
+
+- **BREAKING**: The icon peer dependency moved from `lucide-vue-next` to
+  `@lucide/vue`. Lucide deprecated `lucide-vue-next` upstream (its final
+  release, `1.0.0`, ships an npm deprecation notice naming `@lucide/vue` as the
+  replacement), so it no longer receives icons or fixes. Consumers must install
+  `@lucide/vue@^1.0.0`; the exported icon names and props are unchanged, so any
+  icon imports in your own code need only the specifier swapped. See
+  "Migrating from lucide-vue-next" in the README.
+- The `tailwind-merge` peer range widened from `^2.0.0` to `^2.0.0 || ^3.0.0`.
+  `tailwind-merge` v3 (the Tailwind CSS v4 line) has been current since well
+  before `0.2.0`, so the old range forced a downgrade — or an install override —
+  on any app already on v3. Only `twMerge` is used, and its signature is the
+  same in both majors.
+
 ## [0.2.0] - 2026-09-07
 
 ### Changed
@@ -242,7 +259,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Slot documentation
 - Dark mode setup guide
 
-[Unreleased]: https://github.com/toniel/laravel-tanstack-datatable/compare/v0.2.0...HEAD
+[Unreleased]: https://github.com/toniel/laravel-tanstack-datatable/compare/v0.3.0...HEAD
+[0.3.0]: https://github.com/toniel/laravel-tanstack-datatable/compare/v0.2.0...v0.3.0
 [0.2.0]: https://github.com/toniel/laravel-tanstack-datatable/compare/v0.1.11...v0.2.0
 [0.1.11]: https://github.com/toniel/laravel-tanstack-datatable/compare/v0.1.10...v0.1.11
 [0.1.9]: https://github.com/toniel/laravel-tanstack-datatable/compare/v0.1.8...v0.1.9
